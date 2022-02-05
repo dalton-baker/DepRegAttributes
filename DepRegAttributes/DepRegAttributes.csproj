@@ -2,10 +2,29 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>DBaker.$(AssemblyName)</PackageId>
+    <Authors>dalton_s_baker</Authors>
+    <Company />
+    <Copyright></Copyright>
+    <Description>A handy package to register dependencies with attributes</Description>
+    <PackageProjectUrl>https://github.com/dalton-baker/DepRegAttributes</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/dalton-baker/DepRegAttributes</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <PackageTags>DependancyInjection, DI, IServiceCollection, IServiceProvider</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
   </ItemGroup>
 
 </Project>

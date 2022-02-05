@@ -1,4 +1,4 @@
-# DepRegAttributes
+# DBaker.DepRegAttributes
 Register dependencies with attributes
 
 

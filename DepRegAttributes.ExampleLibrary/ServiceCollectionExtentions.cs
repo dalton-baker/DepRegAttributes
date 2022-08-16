@@ -8,13 +8,13 @@ namespace DepRegAttributes.ExampleLibrary
     //YOU ONLY NEED TO ADD THIS ONCE FOR A SINGLE PROJECT
     public static class ServiceCollectionExtentions
     {
-        public static IServiceCollection AddExampleLibraryRegistration(this IServiceCollection services)
+        public static IServiceCollection AddExampleLibraryRegistration(this IServiceCollection services, string? filter)
         {
             //This will automatically load all dependancies of the
             //assembly we are currently in. Alternatively you can
             //call this once and pass it all of the assemblies you
             //want to load
-            return services.RegisterDependanciesByAttribute();
+            return services.RegisterDependanciesByAttribute(filter);
         }
     }
 }

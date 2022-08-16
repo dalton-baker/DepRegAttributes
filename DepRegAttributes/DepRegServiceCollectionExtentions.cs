@@ -9,23 +9,39 @@ namespace DepRegAttributes
     {
         public static IServiceCollection RegisterDependanciesByAttribute(
             this IServiceCollection services)
-        {
-            return services.RegisterDependanciesByAttribute(
+            => services.RegisterDependanciesByAttribute(
                 Assembly.GetCallingAssembly());
-        }
 
         public static IServiceCollection RegisterDependanciesByAttribute(
             this IServiceCollection services,
-            Assembly assembly)
-        {
-            foreach(Type type in assembly.GetTypes())
-            {
-                var regAttributes = type
-                    .GetCustomAttributes(typeof(RegistrationAttributeBase), false)
-                    .Select(a => a as RegistrationAttributeBase)
-                    .ToList();
+            string filter)
+            => services.RegisterDependanciesByAttribute(
+                filter,
+                Assembly.GetCallingAssembly());
 
-                regAttributes.ForEach(reg => reg.RegisterServcices(services, type));
+        public static IServiceCollection RegisterDependanciesByAttribute(
+            this IServiceCollection services,
+            params Assembly[] assemblies)
+            => RegisterDependanciesByAttribute(services, null, assemblies);
+
+        public static IServiceCollection RegisterDependanciesByAttribute(
+            this IServiceCollection services,
+            string filter,
+            params Assembly[] assemblies)
+        {
+            foreach (var assembly in assemblies)
+            {
+                foreach (Type type in assembly.GetTypes())
+                {
+                    var regAttributes = type
+                        .GetCustomAttributes(typeof(RegistrationAttributeBase), false)
+                        .Select(a => a as RegistrationAttributeBase);
+
+                    foreach (var regAttribute in regAttributes)
+                    {
+                        regAttribute.RegisterServices(services, type, filter);
+                    }
+                }
             }
 
             return services;

@@ -7,24 +7,24 @@ namespace DepRegAttributes
 {
     public static class DepRegServiceCollectionExtentions
     {
-        public static IServiceCollection RegisterDependanciesByAttribute(
+        public static IServiceCollection RegisterDependenciesByAttribute(
             this IServiceCollection services)
-            => services.RegisterDependanciesByAttribute(
+            => services.RegisterDependenciesByAttribute(
                 Assembly.GetCallingAssembly());
 
-        public static IServiceCollection RegisterDependanciesByAttribute(
+        public static IServiceCollection RegisterDependenciesByAttribute(
             this IServiceCollection services,
             string filter)
-            => services.RegisterDependanciesByAttribute(
+            => services.RegisterDependenciesByAttribute(
                 filter,
                 Assembly.GetCallingAssembly());
 
-        public static IServiceCollection RegisterDependanciesByAttribute(
+        public static IServiceCollection RegisterDependenciesByAttribute(
             this IServiceCollection services,
             params Assembly[] assemblies)
-            => RegisterDependanciesByAttribute(services, null, assemblies);
+            => RegisterDependenciesByAttribute(services, null, assemblies);
 
-        public static IServiceCollection RegisterDependanciesByAttribute(
+        public static IServiceCollection RegisterDependenciesByAttribute(
             this IServiceCollection services,
             string filter,
             params Assembly[] assemblies)

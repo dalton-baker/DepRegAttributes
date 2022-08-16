@@ -14,7 +14,7 @@ namespace DepRegAttributes.ExampleLibrary
             //assembly we are currently in. Alternatively you can
             //call this once and pass it all of the assemblies you
             //want to load
-            return services.RegisterDependanciesByAttribute(filter);
+            return services.RegisterDependenciesByAttribute(filter);
         }
     }
 }

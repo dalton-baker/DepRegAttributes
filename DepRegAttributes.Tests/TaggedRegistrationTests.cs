@@ -1,4 +1,5 @@
-﻿namespace DepRegAttributes.Tests;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+namespace DepRegAttributes.Tests;
 
 [TestClass]
 public class TaggedRegistrationTests : UnitTestBase
@@ -67,5 +68,24 @@ public class TaggedRegistrationTests : UnitTestBase
         //Assert
         Assert.IsNotNull(untagged1);
         Assert.IsNotNull(untagged2);
+    }
+
+    [TestMethod]
+    public void GetAllFromUnFilteredCollection()
+    {
+        //Arrange
+        var sut = CreateSut();
+
+        //Act
+        var one = sut.GetService<TaggedOne>();
+        var two = sut.GetService<TaggedTwo>();
+        var oneTwo = sut.GetService<TaggedOneTwo>();
+        var untagged = sut.GetService<TaggedNothing>();
+
+        //Assert
+        Assert.IsNotNull(one);
+        Assert.IsNotNull(two);
+        Assert.IsNotNull(oneTwo);
+        Assert.IsNotNull(untagged);
     }
 }

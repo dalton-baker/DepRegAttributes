@@ -1,5 +1,5 @@
 # DBaker.DepRegAttributes
-Register dependencies with attributes
+Register dependencies with attributes!
 
 
 Example Usage:
@@ -7,18 +7,46 @@ Example Usage:
 [RegisterTransient]
 public class TransientRegisteredAsSelf
 {
+    //This will be registered as TransientRegisteredAsSelf
     ...
 }
 
-[RegisterTransient(typeof(Iinterface))]
-public class TransientRegisteredWithInterface: Iinterface
+[RegisterTransient]
+public class TransientRegisteredAsInterface : ITransientRegisteredAsInterface
 {
+    //This will be registered as ITransientRegisteredAsInterface
+    //This only automatically happens if the interface and class name match
+    //Note: providing any parameters will override this behavior
     ...
 }
 
-[RegisterTransient(typeof(Iinterface1), typeof(Iinterface2), typeof(Iinterface3))]
-public class TransientRegisteredWithMultipleInterface: Iinterface1, Iinterface2, Iinterface3
+[RegisterTransient(typeof(IInterface))]
+public class TransientRegisteredWithInterface: IInterface
 {
+    //This will be registered as IInterface
+    ...
+}
+
+[RegisterTransient(typeof(IInterface))]
+public class TransientRegisteredWithInterface: ITransientRegisteredAsInterface, IInterface
+{
+    //This will be registered only as IInterface
+    //Providing parameters overrides the automatic registration by interfaces with the same name
+    ...
+}
+
+[RegisterTransient(typeof(IInterface1), typeof(IInterface2))]
+public class TransientRegisteredWithMultipleInterface: IInterface1, IInterface2
+{
+    //This will be registered as IInterface1 and IInterface2
+    ...
+}
+
+[RegisterSingleton(typeof(IInterface1), typeof(IInterface2))]
+public class SingletonRegisteredWithMultipleInterface: IInterface1, IInterface2
+{
+    //This will be registered as IInterface1 and IInterface2
+    //Requesting either interface from the service provider will give you the exact same object
     ...
 }
 ```
@@ -54,8 +82,8 @@ public class TagExample1
     ...
 }
 
-[RegisterTransient(new string[] { "tag2", "tag3" }, typeof(Interface1), typeof(Interface2))]
-public class TagExample2
+[RegisterTransient(new string[] { "tag2", "tag3" }, typeof(IInterface1), typeof(IInterface2))]
+public class TagExample2 : IInterface1, IInterface2
 {
     ...
 }

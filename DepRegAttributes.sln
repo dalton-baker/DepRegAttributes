@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepRegAttributes.Tests", "D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{3D19F9DD-3778-44DD-979F-75A3AB5F3099}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\ci-pr-gate.yml = .github\workflows\ci-pr-gate.yml
+		.github\workflows\build-test.yml = .github\workflows\build-test.yml
 	EndProjectSection
 EndProject
 Global

@@ -29,6 +29,8 @@ public class TransientRegistrarionTests : UnitTestBase
         var transient2 = sut.GetRequiredService<TransientClassRegisteredAsSelf>();
 
         //Assert
+        Assert.IsNotNull(transient1);
+        Assert.IsNotNull(transient2);
         Assert.AreNotEqual(transient1, transient2);
     }
 
@@ -43,6 +45,24 @@ public class TransientRegistrarionTests : UnitTestBase
         var transient2 = sut.GetRequiredService<ITransientClassWithMultipleIntefaces2>();
 
         //Assert
+        Assert.IsNotNull(transient1);
+        Assert.IsNotNull(transient2);
+        Assert.AreNotEqual(transient1, transient2);
+    }
+
+    [TestMethod]
+    public void GetTransientFromSingleInterfaceTest()
+    {
+        //Arrange
+        var sut = CreateSut();
+
+        //Act
+        var transient1 = sut.GetRequiredService<ITransientClassWithOneInterface>();
+        var transient2 = sut.GetRequiredService<ITransientClassWithOneInterface>();
+
+        //Assert
+        Assert.IsNotNull(transient1);
+        Assert.IsNotNull(transient2);
         Assert.AreNotEqual(transient1, transient2);
     }
 }

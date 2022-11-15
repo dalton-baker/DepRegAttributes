@@ -23,7 +23,7 @@ namespace DepRegAttributes
                 return;
 
             var asTypes = _asTypes == null || !_asTypes.Any()
-                ? new Type[] { implementationType }
+                ? new Type[] { implementationType.GetInterface($"I{implementationType.Name}") ?? implementationType }
                 : _asTypes;
 
             foreach (var type in asTypes)

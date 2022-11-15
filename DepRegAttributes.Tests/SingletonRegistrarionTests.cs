@@ -11,9 +11,11 @@ public class SingletonRegistrarionTests : UnitTestBase
 
         //Act
         var singleton = sut.GetRequiredService<SingletonClassRegigisteredAsSelf>();
+        var singleton2 = sut.GetRequiredService<SingletonClassRegigisteredAsSelf>();
 
         //Assert
         Assert.IsNotNull(singleton);
+        Assert.AreEqual(singleton, singleton2);
     }
 
     [TestMethod]
@@ -27,6 +29,8 @@ public class SingletonRegistrarionTests : UnitTestBase
         var singleton2 = sut.GetRequiredService<SingletonClassRegigisteredAsSelf>();
 
         //Assert
+        Assert.IsNotNull(singleton1);
+        Assert.IsNotNull(singleton2);
         Assert.AreEqual(singleton1, singleton2);
     }
 
@@ -41,6 +45,24 @@ public class SingletonRegistrarionTests : UnitTestBase
         var singleton2 = sut.GetRequiredService<ISingletonClassWithMultipleInterfaces2>();
 
         //Assert
+        Assert.IsNotNull(singleton1);
+        Assert.IsNotNull(singleton2);
+        Assert.AreEqual(singleton1, singleton2);
+    }
+
+    [TestMethod]
+    public void GetSingletonFromSingleInterfaceTest()
+    {
+        //Arrange
+        var sut = CreateSut();
+
+        //Act
+        var singleton1 = sut.GetRequiredService<ISingletonClassWithOneInterface>();
+        var singleton2 = sut.GetRequiredService<ISingletonClassWithOneInterface>();
+
+        //Assert
+        Assert.IsNotNull(singleton1);
+        Assert.IsNotNull(singleton2);
         Assert.AreEqual(singleton1, singleton2);
     }
 }

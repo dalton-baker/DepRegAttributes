@@ -13,7 +13,7 @@
 		<RepositoryType>github</RepositoryType>
 		<PackageTags>DependancyInjection, DI, IServiceCollection, IServiceProvider</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>2.0.0</Version>
+		<Version>3.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

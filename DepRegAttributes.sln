@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepRegAttributes", "DepRegA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepRegAttributes.ExampleLibrary", "DepRegAttributes.ExampleLibrary\DepRegAttributes.ExampleLibrary.csproj", "{220C2CA4-C14B-4766-B198-A2C03D539FFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DepRegAttributes.Tests", "DepRegAttributes.Tests\DepRegAttributes.Tests.csproj", "{6765F334-4309-451E-8665-B13F94A2AE6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepRegAttributes.Tests", "DepRegAttributes.Tests\DepRegAttributes.Tests.csproj", "{6765F334-4309-451E-8665-B13F94A2AE6C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{3D19F9DD-3778-44DD-979F-75A3AB5F3099}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci-pr-gate.yml = .github\workflows\ci-pr-gate.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

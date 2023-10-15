@@ -141,31 +141,31 @@ public class SingletonClassGroupedByIterfaces:
 //but it will be different from the ISingletonGroup1 object
 
 [TestMethod]
-    public void GetSingletonGroupsTest()
-    {
-        //Arrange
-        var sut = CreateSut();
+public void GetSingletonGroupsTest()
+{
+    //Arrange
+    var sut = CreateSut();
 
-        //Act
-        var singletonGroup1 = sut.GetRequiredService<ISingletonGroup1>();
-        var singletonGroup1_2 = sut.GetRequiredService<ISingletonGroup1_2>();
-        var singletonGroup2 = sut.GetRequiredService<ISingletonGroup2>();
-        var singletonGroup2_2 = sut.GetRequiredService<ISingletonGroup2_2>();
+    //Act
+    var singletonGroup1 = sut.GetRequiredService<ISingletonGroup1>();
+    var singletonGroup1_2 = sut.GetRequiredService<ISingletonGroup1_2>();
+    var singletonGroup2 = sut.GetRequiredService<ISingletonGroup2>();
+    var singletonGroup2_2 = sut.GetRequiredService<ISingletonGroup2_2>();
 
-        //Assert
-        Assert.IsNotNull(singletonGroup1);
-        Assert.IsNotNull(singletonGroup1_2);
-        Assert.AreEqual(singletonGroup1, singletonGroup1_2);
+    //Assert
+    Assert.IsNotNull(singletonGroup1);
+    Assert.IsNotNull(singletonGroup1_2);
+    Assert.AreEqual(singletonGroup1, singletonGroup1_2);
 
-        Assert.IsNotNull(singletonGroup2);
-        Assert.IsNotNull(singletonGroup2_2);
-        Assert.AreEqual(singletonGroup2, singletonGroup2_2);
+    Assert.IsNotNull(singletonGroup2);
+    Assert.IsNotNull(singletonGroup2_2);
+    Assert.AreEqual(singletonGroup2, singletonGroup2_2);
 
-        Assert.AreNotEqual(singletonGroup1, singletonGroup2);
-        Assert.AreNotEqual(singletonGroup1, singletonGroup2_2);
-        Assert.AreNotEqual(singletonGroup1_2, singletonGroup2);
-        Assert.AreNotEqual(singletonGroup1_2, singletonGroup2_2);
-    }
+    Assert.AreNotEqual(singletonGroup1, singletonGroup2);
+    Assert.AreNotEqual(singletonGroup1, singletonGroup2_2);
+    Assert.AreNotEqual(singletonGroup1_2, singletonGroup2);
+    Assert.AreNotEqual(singletonGroup1_2, singletonGroup2_2);
+}
 ```
 
 You can look at examples of usage in the DepRegAttributes.Example and DepRegAttributes.ExampleLibrary projects.

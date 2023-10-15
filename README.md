@@ -2,7 +2,7 @@
 Register dependencies with attributes!
 
 
-Example Usage:
+Example usage in .NET Standard 2.0:
 ```c#
 [RegisterTransient]
 public class TransientRegisteredAsSelf
@@ -20,14 +20,16 @@ public class TransientRegisteredAsInterface : ITransientRegisteredAsInterface
     ...
 }
 
-[RegisterTransient(typeof(IInterface))]
+[RegisterTransient(typeof(IInterface))] //.NET Standard
+[RegisterTransient<IInterface>] //In .NET 7 or later
 public class TransientRegisteredWithInterface: IInterface
 {
     //This will be registered as IInterface
     ...
 }
 
-[RegisterTransient(typeof(IInterface))]
+[RegisterTransient(typeof(IInterface))] //.NET Standard
+[RegisterTransient<IInterface>] //In .NET 7 or later
 public class TransientRegisteredWithInterface: ITransientRegisteredAsInterface, IInterface
 {
     //This will be registered only as IInterface
@@ -35,14 +37,16 @@ public class TransientRegisteredWithInterface: ITransientRegisteredAsInterface, 
     ...
 }
 
-[RegisterTransient(typeof(IInterface1), typeof(IInterface2))]
+[RegisterTransient(typeof(IInterface1), typeof(IInterface2))] //.NET Standard
+[RegisterTransient<IInterface1, IInterface2>] //In .NET 7 or later
 public class TransientRegisteredWithMultipleInterface: IInterface1, IInterface2
 {
     //This will be registered as IInterface1 and IInterface2
     ...
 }
 
-[RegisterSingleton(typeof(IInterface1), typeof(IInterface2))]
+[RegisterSingleton(typeof(IInterface1), typeof(IInterface2))] //.NET Standard
+[RegisterTransient<IInterface1, IInterface2>] //In .NET 7 or later
 public class SingletonRegisteredWithMultipleInterface: IInterface1, IInterface2
 {
     //This will be registered as IInterface1 and IInterface2
@@ -76,13 +80,13 @@ public static class ServiceCollectionExtentions
 
 You can use tagging to filter the servicees you register. If you add no tag, your service will be registered all the time.
 ```c#
-[RegisterTransient(new string[] { "tag1", "tag2" })]
+[RegisterTransient("tag1", "tag2")]
 public class TagExample1
 {
     ...
 }
 
-[RegisterTransient(new string[] { "tag2", "tag3" }, typeof(IInterface1), typeof(IInterface2))]
+[RegisterTransient(new[] { "tag2", "tag3" }, typeof(IInterface1), typeof(IInterface2))]
 public class TagExample2 : IInterface1, IInterface2
 {
     ...
@@ -114,6 +118,53 @@ public static class ServiceCollectionExtentions
         //This will get TagExample1 and TagExample2
         return services.RegisterDependenciesByAttribute();
     }
+}
+```
+
+
+Advanced Scenarios
+```c#
+//Register Singleton or Scoped services in groups
+[RegisterSingleton<ISingletonGroup1, ISingletonGroup1_2>]
+[RegisterSingleton<ISingletonGroup2, ISingletonGroup2_2>]
+public class SingletonClassGroupedByIterfaces: 
+    ISingletonGroup1, 
+    ISingletonGroup1_2, 
+    ISingletonGroup2, 
+    ISingletonGroup2_2
+{
+}
+
+//This will allow you to have two singletons in the service provider based on interfaces.
+//For example, requesting ISingletonGroup1 or ISingletonGroup1_2 will give you the same object.
+//Requesting ISingletonGroup2 or ISingletonGroup2_2 will give you the same object, 
+//but it will be different from the ISingletonGroup1 object
+
+[TestMethod]
+public void GetSingletonGroupsTest()
+{
+    //Arrange
+    var sut = CreateSut();
+
+    //Act
+    var singletonGroup1 = sut.GetRequiredService<ISingletonGroup1>();
+    var singletonGroup1_2 = sut.GetRequiredService<ISingletonGroup1_2>();
+    var singletonGroup2 = sut.GetRequiredService<ISingletonGroup2>();
+    var singletonGroup2_2 = sut.GetRequiredService<ISingletonGroup2_2>();
+
+    //Assert
+    Assert.IsNotNull(singletonGroup1);
+    Assert.IsNotNull(singletonGroup1_2);
+    Assert.AreEqual(singletonGroup1, singletonGroup1_2);
+
+    Assert.IsNotNull(singletonGroup2);
+    Assert.IsNotNull(singletonGroup2_2);
+    Assert.AreEqual(singletonGroup2, singletonGroup2_2);
+
+    Assert.AreNotEqual(singletonGroup1, singletonGroup2);
+    Assert.AreNotEqual(singletonGroup1, singletonGroup2_2);
+    Assert.AreNotEqual(singletonGroup1_2, singletonGroup2);
+    Assert.AreNotEqual(singletonGroup1_2, singletonGroup2_2);
 }
 ```
 

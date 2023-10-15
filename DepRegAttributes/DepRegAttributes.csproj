@@ -1,19 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net7.0</TargetFrameworks>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<PackageId>DBaker.$(AssemblyName)</PackageId>
 		<Authors>dalton_s_baker</Authors>
 		<Company />
 		<Copyright></Copyright>
-		<Description>A handy package to register dependencies with attributes</Description>
+		<Description>A handy package to register dependencies with attributes. Never touch your Program.cs file again!</Description>
 		<PackageProjectUrl>https://github.com/dalton-baker/DepRegAttributes</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/dalton-baker/DepRegAttributes</RepositoryUrl>
 		<RepositoryType>github</RepositoryType>
 		<PackageTags>DependancyInjection, DI, IServiceCollection, IServiceProvider</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>4.0.0</Version>
+		<Version>5.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

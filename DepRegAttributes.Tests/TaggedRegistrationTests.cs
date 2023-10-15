@@ -14,11 +14,13 @@ public class TaggedRegistrationTests : UnitTestBase
         var one = sut.GetService<TaggedOne>();
         var two = sut.GetService<TaggedTwo>();
         var oneTwo = sut.GetService<TaggedOneTwo>();
+        var interfaceOneTwo = sut.GetService<ITaggedOneTwoWithInterface>();
 
         //Assert
         Assert.IsNotNull(one);
         Assert.IsNull(two);
         Assert.IsNotNull(oneTwo);
+        Assert.IsNotNull(interfaceOneTwo);
     }
 
     [TestMethod]
@@ -31,11 +33,13 @@ public class TaggedRegistrationTests : UnitTestBase
         var one = sut.GetService<TaggedOne>();
         var two = sut.GetService<TaggedTwo>();
         var oneTwo = sut.GetService<TaggedOneTwo>();
+        var interfaceOneTwo = sut.GetService<ITaggedOneTwoWithInterface>();
 
         //Assert
         Assert.IsNull(one);
         Assert.IsNotNull(two);
         Assert.IsNotNull(oneTwo);
+        Assert.IsNotNull(interfaceOneTwo);
     }
 
     [TestMethod]
@@ -48,10 +52,14 @@ public class TaggedRegistrationTests : UnitTestBase
         //Act
         var untagged1 = sut1.GetService<TaggedOneTwo>();
         var untagged2 = sut2.GetService<TaggedOneTwo>();
+        var interfaceOneTwo1 = sut1.GetService<ITaggedOneTwoWithInterface>();
+        var interfaceOneTwo2 = sut2.GetService<ITaggedOneTwoWithInterface>();
 
         //Assert
         Assert.IsNotNull(untagged1);
         Assert.IsNotNull(untagged2);
+        Assert.IsNotNull(interfaceOneTwo1);
+        Assert.IsNotNull(interfaceOneTwo2);
     }
 
     [TestMethod]
@@ -81,11 +89,13 @@ public class TaggedRegistrationTests : UnitTestBase
         var two = sut.GetService<TaggedTwo>();
         var oneTwo = sut.GetService<TaggedOneTwo>();
         var untagged = sut.GetService<TaggedNothing>();
+        var interfaceOneTwo = sut.GetService<ITaggedOneTwoWithInterface>();
 
         //Assert
         Assert.IsNotNull(one);
         Assert.IsNotNull(two);
         Assert.IsNotNull(oneTwo);
         Assert.IsNotNull(untagged);
+        Assert.IsNotNull(interfaceOneTwo);
     }
 }

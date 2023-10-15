@@ -6,8 +6,18 @@ namespace DepRegAttributes
     [AttributeUsage(AttributeTargets.Class)]
     public class RegisterTransientAttribute : RegistrationAttributeBase
     {
+        public RegisterTransientAttribute()
+            : base(Array.Empty<Type>(), Array.Empty<string>())
+        {
+        }
+
         public RegisterTransientAttribute(params Type[] asTypes) 
-            : base(asTypes, new string[0])
+            : base(asTypes, Array.Empty<string>())
+        {
+        }
+
+        public RegisterTransientAttribute(params string[] filters)
+            : base(Array.Empty<Type>(), filters)
         {
         }
 

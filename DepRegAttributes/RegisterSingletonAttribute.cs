@@ -3,11 +3,21 @@ using System;
 
 namespace DepRegAttributes
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class RegisterSingletonAttribute : RegistrationAttributeBase
     {
+        public RegisterSingletonAttribute()
+            : base(Array.Empty<Type>(), Array.Empty<string>())
+        {
+        }
+
         public RegisterSingletonAttribute(params Type[] asTypes) 
-            : base(asTypes, new string[0])
+            : base(asTypes, Array.Empty<string>())
+        {
+        }
+
+        public RegisterSingletonAttribute(params string[] filters)
+            : base(Array.Empty<Type>(), filters)
         {
         }
 

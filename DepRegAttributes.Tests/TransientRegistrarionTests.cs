@@ -51,6 +51,22 @@ public class TransientRegistrarionTests : UnitTestBase
     }
 
     [TestMethod]
+    public void GetTransientFromMultipleInterfacesGenricTest()
+    {
+        //Arrange
+        var sut = CreateSut();
+
+        //Act
+        var transient1 = sut.GetRequiredService<ITransientClassWithMultipleIntefacesGeneric>();
+        var transient2 = sut.GetRequiredService<ITransientClassWithMultipleIntefacesGeneric2>();
+
+        //Assert
+        Assert.IsNotNull(transient1);
+        Assert.IsNotNull(transient2);
+        Assert.AreNotEqual(transient1, transient2);
+    }
+
+    [TestMethod]
     public void GetTransientFromSingleInterfaceTest()
     {
         //Arrange

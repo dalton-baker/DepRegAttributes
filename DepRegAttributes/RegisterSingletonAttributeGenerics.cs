@@ -10,12 +10,12 @@ public class RegisterSingletonAttribute<T1> : RegisterSingletonAttribute
         new[] { typeof(T1) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }
@@ -27,12 +27,12 @@ public class RegisterSingletonAttribute<T1, T2> : RegisterSingletonAttribute
         new[] { typeof(T1), typeof(T2) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }
@@ -44,12 +44,12 @@ public class RegisterSingletonAttribute<T1, T2, T3> : RegisterSingletonAttribute
         new[] { typeof(T1), typeof(T2), typeof(T3) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }
@@ -61,12 +61,12 @@ public class RegisterSingletonAttribute<T1, T2, T3, T4> : RegisterSingletonAttri
         new[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }
@@ -78,12 +78,12 @@ public class RegisterSingletonAttribute<T1, T2, T3, T4, T5> : RegisterSingletonA
         new[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }
@@ -95,12 +95,12 @@ public class RegisterSingletonAttribute<T1, T2, T3, T4, T5, T6> : RegisterSingle
         new[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }
@@ -112,12 +112,12 @@ public class RegisterSingletonAttribute<T1, T2, T3, T4, T5, T6, T7> : RegisterSi
         new[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }
@@ -129,12 +129,12 @@ public class RegisterSingletonAttribute<T1, T2, T3, T4, T5, T6, T7, T8> : Regist
         new[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }
@@ -146,12 +146,12 @@ public class RegisterSingletonAttribute<T1, T2, T3, T4, T5, T6, T7, T8, T9> : Re
         new[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }
@@ -163,12 +163,12 @@ public class RegisterSingletonAttribute<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
         new[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10) };
 
     public RegisterSingletonAttribute()
-         : base(_types)
+        : base(_types)
     {
     }
 
     public RegisterSingletonAttribute(params string[] filters)
-         : base(filters, _types)
+        : base(filters, _types)
     {
     }
 }

@@ -60,12 +60,12 @@ public class GenerateTypedAttributesTests : UnitTestBase
             builder.AppendLine($"        new[] {{ {allTypes} }};");
             builder.AppendLine();
             builder.AppendLine($"    public {attributeName}()");
-            builder.AppendLine("         : base(_types)");
+            builder.AppendLine("        : base(_types)");
             builder.AppendLine("    {");
             builder.AppendLine("    }");
             builder.AppendLine();
             builder.AppendLine($"    public {attributeName}(params string[] filters)");
-            builder.AppendLine("         : base(filters, _types)");
+            builder.AppendLine("        : base(filters, _types)");
             builder.AppendLine("    {");
             builder.AppendLine("    }");
             builder.AppendLine("}");

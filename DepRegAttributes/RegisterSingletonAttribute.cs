@@ -26,6 +26,6 @@ namespace DepRegAttributes
         {
         }
 
-        public override ServiceLifetime ServiceLifetime => ServiceLifetime.Singleton;
+        protected override ServiceLifetime ServiceLifetime => ServiceLifetime.Singleton;
     }
 }

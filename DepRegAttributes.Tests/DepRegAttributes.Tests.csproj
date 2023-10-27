@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DepRegAttributes.ExampleLibrary\DepRegAttributes.ExampleLibrary.csproj" />
+    <ProjectReference Include="..\DepRegAttributes\DepRegAttributes.csproj" />
   </ItemGroup>
 
 </Project>

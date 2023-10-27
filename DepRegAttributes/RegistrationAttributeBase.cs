@@ -15,7 +15,8 @@ namespace DepRegAttributes
             _tags = tags;
         }
 
-        public abstract ServiceLifetime ServiceLifetime { get; }
+        protected abstract ServiceLifetime ServiceLifetime { get; }
+        protected virtual Func<IServiceProvider, Type, object> ObjectFactory { get; set; } = null;
 
         public void RegisterServices(IServiceCollection serviceCollection, Type implementationType, string filter = null)
         {
@@ -32,7 +33,9 @@ namespace DepRegAttributes
                     throw new DepRegAttributeException($"{implementationType.Name} cannot be registered as a {type.Name}.");
 
                 var descriptor = type == asTypes.First()
-                    ? new ServiceDescriptor(type, implementationType, ServiceLifetime)
+                    ? ObjectFactory == null 
+                        ? new ServiceDescriptor(type, implementationType, ServiceLifetime)
+                        : new ServiceDescriptor(type, sp => ObjectFactory(sp, implementationType), ServiceLifetime)
                     : new ServiceDescriptor(type, p => p.GetService(_asTypes.First()), ServiceLifetime);
 
                 serviceCollection.Add(descriptor);

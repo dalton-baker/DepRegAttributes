@@ -1,6 +1,7 @@
 ﻿namespace DepRegAttributes.ExampleLibrary.RegisteredClasses;
 
-[RegisterTransient("One", "Two")]
+[RegisterTransient(Tag = "One")]
+[RegisterTransient(Tag = "Two")]
 public class TaggedOneTwo
 {
 }

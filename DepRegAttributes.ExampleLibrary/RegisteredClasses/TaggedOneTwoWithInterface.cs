@@ -2,7 +2,8 @@
 
 public interface ITaggedOneTwoWithInterface { }
 
-[RegisterTransient(new[] { "One", "Two" }, typeof(ITaggedOneTwoWithInterface))]
+[RegisterTransient(typeof(ITaggedOneTwoWithInterface), Tag = "One")]
+[RegisterTransient(typeof(ITaggedOneTwoWithInterface), Tag = "Two")]
 public class TaggedOneTwoWithInterface : ITaggedOneTwoWithInterface
 {
 }

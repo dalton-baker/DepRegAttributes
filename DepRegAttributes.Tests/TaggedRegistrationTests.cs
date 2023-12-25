@@ -92,10 +92,10 @@ public class TaggedRegistrationTests : UnitTestBase
         var interfaceOneTwo = sut.GetService<ITaggedOneTwoWithInterface>();
 
         //Assert
-        Assert.IsNotNull(one);
-        Assert.IsNotNull(two);
-        Assert.IsNotNull(oneTwo);
+        Assert.IsNull(one);
+        Assert.IsNull(two);
+        Assert.IsNull(oneTwo);
         Assert.IsNotNull(untagged);
-        Assert.IsNotNull(interfaceOneTwo);
+        Assert.IsNull(interfaceOneTwo);
     }
 }

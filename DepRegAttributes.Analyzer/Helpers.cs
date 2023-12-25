@@ -154,6 +154,6 @@ namespace DepRegAttributes.Analyzer
         public const string Singleton = nameof(Singleton);
         public const string Scoped = nameof(Scoped);
 
-        public static List<string> AttributeList => [$"Register{Transient}Attribute", $"Register{Singleton}Attribute", $"Register{Scoped}Attribute"];
+        public static List<string> AttributeList => new() { $"Register{Transient}Attribute", $"Register{Singleton}Attribute", $"Register{Scoped}Attribute" };
     }
 }

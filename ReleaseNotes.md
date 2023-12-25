@@ -1,3 +1,6 @@
+### Version 7.0.1
+ - Fixing nuget package tags and target framework
+
 ### Version 7.0.0 
  - Rewrote library to use source generation instead of reflection. *higher chance of bugs*
  - Added an analyzer that tells a developer when an attribute is invalid.

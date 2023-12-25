@@ -1,227 +1,139 @@
 # Dependency Registration Attributes
-Register dependencies with attributes and never touch your Program.cs file again!
+Add services to your Service Collection with attributes! Never touch your Program.cs file again!
 
-
-### Example usage in .NET Standard 2.0:
+There are three attributes you can use to register services with your ServiceCollection:
 ```c#
 [RegisterTransient]
-public class TransientRegisteredAsSelf
-{
-    //This will be registered as TransientRegisteredAsSelf
-    ...
-}
-
-[RegisterTransient]
-public class TransientRegisteredAsInterface : ITransientRegisteredAsInterface
-{
-    //This will be registered as ITransientRegisteredAsInterface
-    //This only automatically happens if the interface and class name match
-    //Note: providing any parameters will override this behavior
-    ...
-}
-
-[RegisterTransient(typeof(IInterface))] //.NET Standard
-[RegisterTransient<IInterface>] //In .NET 7 or later
-public class TransientRegisteredWithInterface: IInterface
-{
-    //This will be registered as IInterface
-    ...
-}
-
-[RegisterTransient(typeof(IInterface))] //.NET Standard
-[RegisterTransient<IInterface>] //In .NET 7 or later
-public class TransientRegisteredWithInterface: ITransientRegisteredAsInterface, IInterface
-{
-    //This will be registered only as IInterface
-    //Providing parameters overrides the automatic registration by interfaces with the same name
-    ...
-}
-
-[RegisterTransient(typeof(IInterface1), typeof(IInterface2))] //.NET Standard
-[RegisterTransient<IInterface1, IInterface2>] //In .NET 7 or later
-public class TransientRegisteredWithMultipleInterface: IInterface1, IInterface2
-{
-    //This will be registered as IInterface1 and IInterface2
-    ...
-}
-
-[RegisterSingleton(typeof(IInterface1), typeof(IInterface2))] //.NET Standard
-[RegisterTransient<IInterface1, IInterface2>] //In .NET 7 or later
-public class SingletonRegisteredWithMultipleInterface: IInterface1, IInterface2
-{
-    //This will be registered as IInterface1 and IInterface2
-    //Requesting either interface from the service provider will give you the exact same object
-    ...
-}
-```
-
-You can register Transient, Scoped, and Singletons:
-```c#
-[RegisterTransient]
-...
-
 [RegisterScoped]
-...
-
 [RegisterSingleton]
-...
 ```
 
-In order for the attributes to work you will need to create an extension in the project you are using the attributes:
+There is also an extension for IServiceCollection you use to add these services:
+```
+serviceCollection.AddByAttribute();
+```
+
+
+## Basic Usage
+
 ```c#
-public static class ServiceCollectionExtentions
+[RegisterTransient]
+public class ExampleService
 {
-    public static IServiceCollection AddExampleLibraryRegistration(this IServiceCollection services)
-    {
-        return services.RegisterDependenciesByAttribute();
-    }
+    //Equivalent:
+    //serviceCollection.AddTransient<ExampleService>();
 }
 ```
 
-You can use tagging to filter the servicees you register. If you add no tag, your service will be registered all the time.
+If your service has an interface with a matching name, it will be automatically used.
+This is the most used case. 
 ```c#
-[RegisterTransient("tag1", "tag2")]
-public class TagExample1
+[RegisterTransient]
+public class ExampleService : IExampleService
 {
-    ...
-}
-
-[RegisterTransient(new[] { "tag2", "tag3" }, typeof(IInterface1), typeof(IInterface2))]
-public class TagExample2 : IInterface1, IInterface2
-{
-    ...
-}
-
-//register dependencies based on tag
-public static class ServiceCollectionExtentions
-{
-    public static IServiceCollection AddByTag(this IServiceCollection services)
-    {
-        //This will get TagExample1
-        return services.RegisterDependenciesByAttribute("tag1");
-    }
-
-    public static IServiceCollection AddByTag2(this IServiceCollection services)
-    {
-        //This will get TagExample1 and TagExample2
-        return services.RegisterDependenciesByAttribute("tag2");
-    }
-
-    public static IServiceCollection AddByTag3(this IServiceCollection services)
-    {
-        //This will get TagExample2
-        return services.RegisterDependenciesByAttribute("tag3");
-    }
-
-    public static IServiceCollection AddAll(this IServiceCollection services)
-    {
-        //This will get TagExample1 and TagExample2
-        return services.RegisterDependenciesByAttribute();
-    }
+    //Equivalent:
+    //serviceCollection.AddTransient<IExampleService, ExampleService>();
 }
 ```
+*Note: this does not happen if you have any explicitly defined service types in the attribute*
 
 
-## Advanced Scenarios
+## Registering with Explicit Service Types
 
-### Registering grouped Singleton/Scoped
-This will allow you to have two singletons in the service provider based on interfaces. For example, requesting ISingletonGroup1 or ISingletonGroup1_2 will give you the same object.
-Requesting ISingletonGroup2 or ISingletonGroup2_2 will give you the same object, but it will be different from the ISingletonGroup1 object
 ```c#
-[RegisterSingleton<ISingletonGroup1, ISingletonGroup1_2>]
-[RegisterSingleton<ISingletonGroup2, ISingletonGroup2_2>]
-public class SingletonClassGroupedByIterfaces: 
-    ISingletonGroup1, 
-    ISingletonGroup1_2, 
-    ISingletonGroup2, 
-    ISingletonGroup2_2
+[RegisterTransient<IAnotherExampleService>]
+public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService
 {
-}
-
-[TestMethod]
-public void GetSingletonGroupsTest()
-{
-    //Arrange
-    var sut = CreateSut();
-
-    //Act
-    var singletonGroup1 = sut.GetRequiredService<ISingletonGroup1>();
-    var singletonGroup1_2 = sut.GetRequiredService<ISingletonGroup1_2>();
-    var singletonGroup2 = sut.GetRequiredService<ISingletonGroup2>();
-    var singletonGroup2_2 = sut.GetRequiredService<ISingletonGroup2_2>();
-
-    //Assert
-    Assert.IsNotNull(singletonGroup1);
-    Assert.IsNotNull(singletonGroup1_2);
-    Assert.AreEqual(singletonGroup1, singletonGroup1_2);
-
-    Assert.IsNotNull(singletonGroup2);
-    Assert.IsNotNull(singletonGroup2_2);
-    Assert.AreEqual(singletonGroup2, singletonGroup2_2);
-
-    Assert.AreNotEqual(singletonGroup1, singletonGroup2);
-    Assert.AreNotEqual(singletonGroup1, singletonGroup2_2);
-    Assert.AreNotEqual(singletonGroup1_2, singletonGroup2);
-    Assert.AreNotEqual(singletonGroup1_2, singletonGroup2_2);
+    //Equivalent:
+    //serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
 }
 ```
 
-### Implementing a factory
-This is a very limited concept, but might be useful. It's possible new verison of C# will make this significantly more useful.
-For now, you can assign a value to the base `ObjectFactory` property. It looks like this:
-
-`protected virtual Func<IServiceProvider, Type, object> ObjectFactory { get; set; }`
-
-Again this is extremely limited, but I added it because I wanted to have an easy way to bind objects to configuration in ASP.NET Core. Here is an example:
+You can register your implementation with as many service types as you want.
 ```c#
-[AttributeUsage(AttributeTargets.Class)]
-private class RegisterConfigAttribute : RegisterSingletonAttribute
+[RegisterTransient<ExampleServiceBase, IExampleService, IAnotherExampleService>]
+public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService
 {
-    public RegisterConfigAttribute(string configKey)
-    {
-        ObjectFactory = (sp, t) =>
-        {
-            var config = Activator.CreateInstance(t);
-            sp.GetRequiredService<IConfiguration>().Bind(configKey, config);
-            return config;
-        };
-    }
+    //Equivalent:
+    //serviceCollection.AddTransient<ExampleServiceBase, ExampleService>();
+    //serviceCollection.AddTransient<IExampleService, ExampleService>();
+    //serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
 }
 ```
-This will have the effect of registering a singleton object in the service provider. Additionally it will automatically bind the object to a section in your appsettings.json file, determined by the configKey.
 
-Then we can use it on a class like this:
+You can also use multiple attributes.
 ```c#
-public interface IConfigClass
+[RegisterTransient<ExampleServiceBase>]
+[RegisterTransient<IExampleService>]
+[RegisterTransient<IAnotherExampleService>]
+public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService
 {
-    string Example { get; }
-}
-
-[RegisterConfig("Config")]
-public class ConfigClass : IConfigClass
-{
-    public string Example { get; set; } = string.Empty;
-}
-```
-
-If the following is in your appsettings.json file, the "Config" section will be automatically be mapped to the IConfigClass.
-
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information"
-    }
-  },
-  "AllowedHosts": "*",
-  "Config": {
-    "Example": "A Value"
-  }
+    //Equivalent:
+    //serviceCollection.AddTransient<ExampleServiceBase, ExampleService>();
+    //serviceCollection.AddTransient<IExampleService, ExampleService>();
+    //serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
 }
 ```
 
+If you are using a C# language version lower than 11, you will not be able to use generic arguments. Instead use type arguments:
+```c#
+[RegisterTransient(typeof(IExampleService), typeof(IAnotherExampleService))]
+public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService
+{
+    //Equivalent:
+    //serviceCollection.AddTransient<IExampleService, ExampleService>();
+    //serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
+}
+```
+
+When using multiple servcie types, scoped and singletons work a little differently form transient.
+For each attribute, only one object will be constructed for a singleton or scoped service.
+```c#
+[RegisterSingleton<IExampleService, IAnotherExampleService>]
+public class ExampleService : IExampleService, IAnotherExampleService
+{
+    //Equivalent:
+    //serviceCollection.AddSingleton<IExampleService, ExampleService>();
+    //serviceCollection.AddSingleton(sp => (IAnotherExampleService)sp.GetRequiredService<IExampleService>());
+}
+```
+As you can see, you will get a reference to the same object when requesting either service.
+
+If you use multiple attributes you will get a different singleton for each service.
+```c#
+[RegisterSingleton<IExampleService>]
+[RegisterSingleton<IAnotherExampleService>]
+public class ExampleService : IExampleService, IAnotherExampleService
+{
+    //Equivalent:
+    //serviceCollection.AddSingleton<IExampleService, ExampleService>();
+    //serviceCollection.AddSingleton<IAnotherExampleService, ExampleService>();
+}
+```
 
 
 
+## Registration Tags
+Tags can be used to register services conditionally when building your service collection.
 
-You can look at examples of usage in the DepRegAttributes.Example and DepRegAttributes.ExampleLibrary projects.
+Tags are objects, so you can use anything as long as it can be passed as an attribute argument. This limits them to constants (i.e. strings, enums, numbers).
+```
+serviceCollection.AddByAttribute("Example", 14, ExampleEnum.ExampleValue);
+```
+
+Tagged services will **always** be registered after untagged services, so they will override thier untagged counterparts. Untagged services will always be included, even when passing tags to the AddByAttribute function.
+
+Define tags via the Tag property on attributes:
+```c#
+[RegisterTransient(Tag = "Example")]
+public class ExampleService
+{
+    //Equivalent:
+    //if(includedTag.Equals("Example"))
+    //{
+    //    serviceCollection.AddTransient<ExampleService>();
+    //}
+}
+```
+
+You can look at examples of usage in the DepRegAttributes.ExampleLibrary and unit test projects.

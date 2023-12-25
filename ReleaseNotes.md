@@ -1,5 +1,6 @@
 ### Version 7.0.0 
  - Rewrote library to use source generation instead of reflection. *higher chance of bugs*
+ - Added an analyzer that tells a developer when an attribute is invalid.
  - Changed tag type from `string` to `object`.
  - Generic arguments are now available in C# 11 langage version, instead of .NET 7.0.
  - Adding `AddByAttribute()` as an alternative to `RegisterDependenciesByAttribute()`. This is to align more with other common Service Collection extensions.

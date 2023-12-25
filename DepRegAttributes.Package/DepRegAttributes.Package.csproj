@@ -20,7 +20,32 @@
 			Add services to your Service Collection with attributes! Never touch your Program.cs file again!
 		</Description>
 		<Copyright></Copyright>
-		<PackageTags>DependencyInjection, DI, IServiceCollection, IServiceProvider</PackageTags>
+		<PackageTags>
+			DependencyInjection,
+			dependencyinjection,
+			Dependency Injection,
+			Dependency Inversion,
+			DependencyInversion,
+			Dependency,
+			Injection,
+			DI,
+			Registration,
+			Register,
+			Dependency Registration,
+			Attributes,
+			Attribute,
+			Analyzer,
+			ServiceCollection,
+			IServiceCollection,
+			Service Collection,
+			ServiceProvider
+			IServiceProvider,
+			Service Provider,
+			.NET,
+			Microsoft.Extensions.DependencyInjection,
+			dependency-injection,
+			dotnet-standard
+		</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>github</RepositoryType>
@@ -29,8 +54,9 @@
 		<DevelopmentDependency>true</DevelopmentDependency>
 
 		<PackageReleaseNotes>
-			### Version 7.0.0 
+			### Version 7.0.0
 			 - Rewrote library to use source generation instead of reflection. *higher chance of bugs*
+			 - Added an analyzer that tells a developer when an attribute is invalid.
 			 - Changed tag type from `string` to `object`.
 			 - Generic arguments are now available in C# 11 langage version, instead of .NET 7.0.
 			 - Adding `AddByAttribute()` as an alternative to `RegisterDependenciesByAttribute()`. This is to align more with other common Service Collection extensions.

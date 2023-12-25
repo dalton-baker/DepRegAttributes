@@ -1,4 +1,4 @@
-﻿namespace DepRegAttributes.ExampleLibrary.RegisteredClasses;
+﻿namespace DepRegAttributes.ExampleLibrary.RegisteredClasses.TaggedServices;
 
 public interface ITaggedOneTwoWithInterface { }
 

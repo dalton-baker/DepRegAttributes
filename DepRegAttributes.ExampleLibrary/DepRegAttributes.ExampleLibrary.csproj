@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -12,6 +12,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\DepRegAttributes.Analyzer\DepRegAttributes.Analyzer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\DepRegAttributes.ExternalExampleLibrary\DepRegAttributes.ExternalExampleLibrary.csproj" />
 	</ItemGroup>
 
 </Project>

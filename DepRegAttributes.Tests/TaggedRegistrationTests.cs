@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses.TaggedServices;
 namespace DepRegAttributes.Tests;
 
 [TestClass]
@@ -79,7 +79,86 @@ public class TaggedRegistrationTests : UnitTestBase
     }
 
     [TestMethod]
-    public void GetAllFromUnFilteredCollection()
+    public void GetEnumTagged()
+    {
+        //Arrange
+        var sut = CreateSut(TagEnum.TagExample);
+
+        //Act
+        var service = sut.GetService<TaggedWithEnum>();
+
+        //Assert
+        Assert.IsNotNull(service);
+    }
+
+    [TestMethod]
+    public void GetConstTagged()
+    {
+        //Arrange
+        var sut = CreateSut(Const.Value);
+
+        //Act
+        var service = sut.GetService<TaggedWithConst>();
+
+        //Assert
+        Assert.IsNotNull(service);
+    }
+
+    [TestMethod]
+    public void GetIntTagged()
+    {
+        //Arrange
+        var sut = CreateSut(100);
+
+        //Act
+        var service = sut.GetService<TaggedWithInt>();
+
+        //Assert
+        Assert.IsNotNull(service);
+    }
+
+    [TestMethod]
+    public void GetInternalConstTagged()
+    {
+        //Arrange
+        var sut = CreateSut(TaggedWithInternalConst.Value);
+
+        //Act
+        var service = sut.GetService<TaggedWithInternalConst>();
+
+        //Assert
+        Assert.IsNotNull(service);
+    }
+
+    [TestMethod]
+    public void GetInternalPrivateConstTagged()
+    {
+        //Arrange
+        var sut = CreateSut("Value");
+
+        //Act
+        var service = sut.GetService<TaggedWithInternalPrivateConst>();
+
+        //Assert
+        Assert.IsNotNull(service);
+    }
+
+    [TestMethod]
+    public void GetArrayTagged()
+    {
+        //Arrange
+        var sut = CreateSut(new[] { "Value1", "Value2" });
+        //Note, this is possible, but you will not be able to get any services tagged this way
+
+        //Act
+        var service = sut.GetService<TaggedWithArray>();
+
+        //Assert
+        Assert.IsNull(service);
+    }
+
+    [TestMethod]
+    public void EnsureTaggedNotPresentInUntaggerRegistration()
     {
         //Arrange
         var sut = CreateSut();
@@ -89,6 +168,7 @@ public class TaggedRegistrationTests : UnitTestBase
         var two = sut.GetService<TaggedTwo>();
         var oneTwo = sut.GetService<TaggedOneTwo>();
         var untagged = sut.GetService<TaggedNothing>();
+        var enumTag = sut.GetService<TaggedWithEnum>();
         var interfaceOneTwo = sut.GetService<ITaggedOneTwoWithInterface>();
 
         //Assert
@@ -97,5 +177,6 @@ public class TaggedRegistrationTests : UnitTestBase
         Assert.IsNull(oneTwo);
         Assert.IsNotNull(untagged);
         Assert.IsNull(interfaceOneTwo);
+        Assert.IsNull(enumTag);
     }
 }

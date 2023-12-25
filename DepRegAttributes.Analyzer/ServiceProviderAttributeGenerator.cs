@@ -7,7 +7,6 @@ namespace DepRegAttributes.Analyzer
     [Generator]
     public class ServiceProviderAttributeGenerator : ISourceGenerator
     {
-        public const string Namespace = "DepRegAttributes";
         private const int _maxGenericArgs = 10;
 
         public void Initialize(GeneratorInitializationContext context)
@@ -19,7 +18,7 @@ namespace DepRegAttributes.Analyzer
             if (context.Compilation is not CSharpCompilation csharpCompilation)
                 return;
 
-            foreach (var attribute in Helpers.AttributeList)
+            foreach (var attribute in Consts.AttributeList)
             {
                 context.AddSource($"{attribute}.g.cs",
                     GetBaseAttributeFileContents(attribute, csharpCompilation.LanguageVersion));
@@ -27,8 +26,10 @@ namespace DepRegAttributes.Analyzer
 
             if (csharpCompilation.LanguageVersion >= LanguageVersion.CSharp10)
             {
-                context.AddSource($"{Namespace}GlobalUsing.g.cs",
-                    $"//Auto Generated File\n\nglobal using {Namespace};");
+                context.AddSource($"{Consts.LibraryNamespace}GlobalUsing.g.cs",
+                    $"//Auto Generated File\n" +
+                    $"global using {Consts.LibraryNamespace};\n" +
+                    $"global using {context.Compilation.GetLibraryNamespace()};");
             }
         }
 
@@ -39,7 +40,7 @@ namespace DepRegAttributes.Analyzer
             builder.AppendLine();
             builder.AppendLine("using System;");
             builder.AppendLine();
-            builder.AppendLine($"namespace {Namespace}");
+            builder.AppendLine($"namespace {Consts.LibraryNamespace}");
             builder.AppendLine("{");
             builder.AppendLine("    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]");
             builder.AppendLine($"    public class {attributeName}: Attribute");

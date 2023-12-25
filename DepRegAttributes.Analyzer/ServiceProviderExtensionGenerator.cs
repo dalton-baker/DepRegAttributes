@@ -24,8 +24,6 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(complation,
             (spc, source) => Execute(spc, source.Left, source.Right));
-
-
     }
 
     private (string Implementation, IEnumerable<(string Lifetime, IEnumerable<string> Services, string Tag)>)? Transform(
@@ -36,7 +34,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
 
         var symbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration);
 
-        if(symbol is not INamedTypeSymbol implementation)
+        if (symbol is not INamedTypeSymbol implementation)
             return null;
 
         if (implementation.IsAbstract || implementation.IsStatic)
@@ -93,21 +91,20 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             fileContentBuilder.AppendLine();
             fileContentBuilder.AppendLine("using Microsoft.Extensions.DependencyInjection;");
             fileContentBuilder.AppendLine();
-            fileContentBuilder.AppendLine($"namespace {ServiceProviderAttributeGenerator.Namespace}");
+            fileContentBuilder.AppendLine($"namespace {complation.GetLibraryNamespace()}");
             fileContentBuilder.AppendLine("{");
             fileContentBuilder.AppendLine("    public static class ServiceProviderExtensions");
             fileContentBuilder.AppendLine("    {");
 
             fileContentBuilder.AppendLine("        public static IServiceCollection RegisterDependenciesByAttribute(this IServiceCollection services, params object[] includeTags)");
             fileContentBuilder.AppendLine("        {");
-            fileContentBuilder.AppendLine("            return services.AddByRegisterAttribute(includeTags);");
+            fileContentBuilder.AppendLine("            return services.AddByAttribute(includeTags);");
             fileContentBuilder.AppendLine("        }");
             fileContentBuilder.AppendLine();
-            fileContentBuilder.AppendLine("        public static IServiceCollection AddByRegisterAttribute(this IServiceCollection services, params object[] includeTags)");
+            fileContentBuilder.AppendLine("        public static IServiceCollection AddByAttribute(this IServiceCollection services, params object[] includeTags)");
             fileContentBuilder.AppendLine("        {");
 
             fileContentBuilder.Append(GetServiceRegistrations(untaggedRegistrations, 12));
-
 
             fileContentBuilder.AppendLine();
             fileContentBuilder.AppendLine("            foreach (object includedTag in includeTags)");
@@ -137,7 +134,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
 
             context.AddSource($"ServiceProviderExtensions.g.cs", fileContentBuilder.ToString());
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             context.AddSource($"Error.g.cs", e.ToString());
             return;

@@ -141,6 +141,19 @@ namespace DepRegAttributes.Analyzer
             return string.Empty;
         }
 
-        public static List<string> AttributeList => ["RegisterTransientAttribute", "RegisterScopedAttribute", "RegisterSingletonAttribute"];
+        public static string GetLibraryNamespace(this Compilation complation)
+            => Consts.LibraryNamespace; //$"{complation.Assembly.Name}.{Consts.LibraryNamespace}";
+    }
+
+
+    public class Consts
+    {
+        public const string LibraryNamespace = "DepRegAttributes";
+
+        public const string Transient = nameof(Transient);
+        public const string Singleton = nameof(Singleton);
+        public const string Scoped = nameof(Scoped);
+
+        public static List<string> AttributeList => [$"Register{Transient}Attribute", $"Register{Singleton}Attribute", $"Register{Scoped}Attribute"];
     }
 }

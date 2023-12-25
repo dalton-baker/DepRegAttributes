@@ -10,7 +10,7 @@ There are three attributes you can use to register services with your ServiceCol
 
 There is also an extension for IServiceCollection you use to add these services:
 ```
-serviceCollection.AddServicesByAttribute();
+serviceCollection.AddByAttribute();
 ```
 
 
@@ -118,10 +118,10 @@ Tags can be used to register services conditionally when building your service c
 
 Tags are objects, so you can use anything as long as it can be passed as an attribute argument. This limits them to constants (i.e. strings, enums, numbers).
 ```
-serviceCollection.AddServicesByAttribute("Example", 14, ExampleEnum.ExampleValue);
+serviceCollection.AddByAttribute("Example", 14, ExampleEnum.ExampleValue);
 ```
 
-Tagged services will **always** be registered after untagged services, so they will override thier untagged counterparts. Untagged services will always be included, even when passing tags to the AddServicesByAttribute function.
+Tagged services will **always** be registered after untagged services, so they will override thier untagged counterparts. Untagged services will always be included, even when passing tags to the AddByAttribute function.
 
 Define tags via the Tag property on attributes:
 ```c#

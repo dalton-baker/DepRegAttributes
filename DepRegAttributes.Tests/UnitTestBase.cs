@@ -4,8 +4,8 @@ public abstract class UnitTestBase
 {
     public TestContext TestContext { get; set; } = null!;
 
-    public IServiceProvider CreateSut(string? tag = null)
+    public IServiceProvider CreateSut(params object[] includeTags)
         => new ServiceCollection()
-            .AddExampleLibraryRegistration(tag)
+            .AddExampleLibraryRegistration(includeTags)
             .BuildServiceProvider();
 }

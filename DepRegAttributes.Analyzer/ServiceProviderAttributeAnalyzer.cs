@@ -98,7 +98,6 @@ namespace DepRegAttributes.Analyzer
                             $"You need at least one public constructor to use the {attribute.Name} attribute"));
                 }
             }
-
         }
     }
 }

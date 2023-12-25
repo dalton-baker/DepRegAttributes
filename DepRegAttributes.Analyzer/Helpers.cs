@@ -91,6 +91,56 @@ namespace DepRegAttributes.Analyzer
             return $"{string.Join(".", namespaces)}.{symbol.Name}";
         }
 
+        public static string GetPropertyArgument(AttributeSyntax attributeSyntax, SemanticModel semanticModel, string tag)
+        {
+            if (attributeSyntax.ArgumentList is null)
+                return string.Empty;
+
+
+            foreach (var argument in attributeSyntax.ArgumentList.Arguments)
+            {
+                if (argument.NameEquals is null || argument.NameEquals.Name.Identifier.Text != tag)
+                    continue;
+
+                if (argument.Expression is MemberAccessExpressionSyntax memberAccess)
+                {
+                    var symbol = semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
+                    if (symbol is INamedTypeSymbol namedTypeSymbol)
+                    {
+                        // Access the namespace and name
+                        return $"{GetFullName(namedTypeSymbol)}.{memberAccess.Name}";
+                    }
+                }
+
+                else if (argument.Expression is IdentifierNameSyntax identifierName)
+                {
+                    var symbol = semanticModel.GetSymbolInfo(identifierName).Symbol;
+                    if (symbol is IFieldSymbol fieldSymbol)
+                    {
+                        if(fieldSymbol.DeclaredAccessibility == Accessibility.Public)
+                        {
+                            return $"{GetFullName(fieldSymbol.ContainingType)}.{fieldSymbol.Name}";
+                        }
+
+                        if(fieldSymbol.ConstantValue is not null)
+                        {
+                            if (fieldSymbol.ConstantValue is string value)
+                            {
+                                return $"\"{value}\"";
+                            }
+                            return fieldSymbol.ConstantValue.ToString();
+                        }
+
+                        return string.Empty;
+                    }
+                }
+
+                return argument.Expression.ToFullString();
+            }
+
+            return string.Empty;
+        }
+
         public static List<string> AttributeList => ["RegisterTransientAttribute", "RegisterScopedAttribute", "RegisterSingletonAttribute"];
     }
 }

@@ -11,24 +11,48 @@
 	<PropertyGroup>
 		<PackageId>DBaker.DepRegAttributes</PackageId>
 		<Authors>dalton_s_baker</Authors>
-		<Version>6.0.0</Version>
+		<Version>7.0.0</Version>
 		<PackageProjectUrl>https://github.com/dalton-baker/DepRegAttributes</PackageProjectUrl>
 		<!--<PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>-->
 		<RepositoryUrl>https://github.com/dalton-baker/DepRegAttributes</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Description>
-			A handy package to register dependencies with attributes. Never touch your Program.cs file again!
+			Add services to your Service Collection with attributes! Never touch your Program.cs file again!
 		</Description>
-		<!--<PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>-->
 		<Copyright></Copyright>
 		<PackageTags>DependencyInjection, DI, IServiceCollection, IServiceProvider</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>github</RepositoryType>
 		<Company />
-
-		<DevelopmentDependency>true</DevelopmentDependency>
 		<NoPackageAnalysis>true</NoPackageAnalysis>
+		<DevelopmentDependency>true</DevelopmentDependency>
+
+		<PackageReleaseNotes>
+			7.0.0 Release
+			- Rewrote library to use source generation instead of reflection. *higher chance of bugs*
+			- Changed tag type from 'string' to 'object'.
+			- Generic arguments are now available in C# 11 langage version, instead of .NET 7.0.
+			- Adding AddByRegisterAttribute() as an alternative to RegisterDependenciesByAttribute().
+			Breaking Changes:
+			- Tags are no longer a constructor argument, instead use "Tag" property.
+			- Only one tag is allowed per attribute, before it was unlimited.
+			- Previously if you called AddByRegisterAttribute() with no tag argument, all services for every tag would be added. This is no longer the case, you will only get services for tags you pass into service collection extension.
+			- Removing extensibility (i.e. ObjectFactory). This was not useful and extremely complex with source generation.
+
+			6.0.0
+			- Adding ObjectFactory for extensibility
+
+			5.0.0
+			- Adding multi-targeting for .NET 7.0 and .NET Standard 2.0.
+			- Adding generic attribute arguments for .NET 7.0 target.
+
+			4.0.0
+			- Targeting .NET Standard 2.0 for wider compatibility.
+
+			3.0.0
+			- Automatically registering by matching interface name.
+		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

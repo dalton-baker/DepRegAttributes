@@ -49,22 +49,9 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             .SelectMany(a => a.Attributes)
             .Where(a => Helpers.IsRegistrationAttribute(a, context.SemanticModel))
             .Select(a => (Helpers.GetAttributeName(a).Replace("Register", "").Replace("Attribute", ""),
-                GetServiceNames(a, context.SemanticModel, implementation), GetTag(a)));
+                GetServiceNames(a, context.SemanticModel, implementation), Helpers.GetPropertyArgument(a, context.SemanticModel, "Tag")));
 
         return (Helpers.GetFullName(implementation), registrationAttributes);
-    }
-
-    private string GetTag(AttributeSyntax attributeSyntax)
-    {
-        if(attributeSyntax.ArgumentList is null)
-            return string.Empty;
-
-        var taggedAttribute = attributeSyntax.ArgumentList.Arguments
-            .FirstOrDefault(a => a.NameEquals is not null && 
-                                 a.NameEquals.Name.Identifier.Text == "Tag" && 
-                                 a.Expression is LiteralExpressionSyntax);
-
-        return taggedAttribute is null ? string.Empty : (taggedAttribute.Expression as LiteralExpressionSyntax).Token.Value.ToString();
     }
 
     private void Execute(
@@ -113,21 +100,27 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
 
             fileContentBuilder.AppendLine("        public static IServiceCollection RegisterDependenciesByAttribute(this IServiceCollection services, params object[] includeTags)");
             fileContentBuilder.AppendLine("        {");
-            fileContentBuilder.AppendLine("            return services.AddServicesByAttribute(includeTags);");
+            fileContentBuilder.AppendLine("            return services.AddByRegisterAttribute(includeTags);");
             fileContentBuilder.AppendLine("        }");
             fileContentBuilder.AppendLine();
-            fileContentBuilder.AppendLine("        public static IServiceCollection AddServicesByAttribute(this IServiceCollection services, params object[] includeTags)");
+            fileContentBuilder.AppendLine("        public static IServiceCollection AddByRegisterAttribute(this IServiceCollection services, params object[] includeTags)");
             fileContentBuilder.AppendLine("        {");
 
             fileContentBuilder.Append(GetServiceRegistrations(untaggedRegistrations, 12));
 
 
-            fileContentBuilder.AppendLine("            foreach (string includedTag in includeTags)");
+            fileContentBuilder.AppendLine();
+            fileContentBuilder.AppendLine("            foreach (object includedTag in includeTags)");
             fileContentBuilder.AppendLine("            {");
+            fileContentBuilder.AppendLine("                if(includedTag == null)");
+            fileContentBuilder.AppendLine("                {");
+            fileContentBuilder.AppendLine("                    continue;");
+            fileContentBuilder.AppendLine("                }");
 
             foreach (var taggedRegistration in taggedRegistrations)
             {
-                fileContentBuilder.AppendLine($"                if(includedTag == \"{taggedRegistration.Key}\")");
+                fileContentBuilder.AppendLine();
+                fileContentBuilder.AppendLine($"                if(includedTag.Equals({taggedRegistration.Key}))");
                 fileContentBuilder.AppendLine("                {");
 
                 fileContentBuilder.Append(GetServiceRegistrations(taggedRegistration.Value, 20));
@@ -177,8 +170,6 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
                     }
                 }
             }
-
-            fileContentBuilder.AppendLine();
         }
 
         return fileContentBuilder.ToString();

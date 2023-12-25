@@ -28,8 +28,7 @@ namespace DepRegAttributes.Analyzer
             {
                 context.AddSource($"{Consts.LibraryNamespace}GlobalUsing.g.cs",
                     $"//Auto Generated File\n" +
-                    $"global using {Consts.LibraryNamespace};\n" +
-                    $"global using {context.Compilation.GetLibraryNamespace()};");
+                    $"global using {Consts.LibraryNamespace};");
             }
         }
 

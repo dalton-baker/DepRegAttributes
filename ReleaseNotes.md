@@ -1,3 +1,7 @@
+### Version 7.0.2
+ - Adding Keyed services support.
+ - Added `Key` property on attributes when a project references Microsoft.Extensions.DependencyInjection version 8.0.0 or greater.
+
 ### Version 7.0.1
  - Fixing nuget package tags and target framework
 

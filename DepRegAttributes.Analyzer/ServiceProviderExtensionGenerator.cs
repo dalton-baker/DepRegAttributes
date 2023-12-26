@@ -26,7 +26,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             (spc, source) => Execute(spc, source.Left, source.Right));
     }
 
-    private (string Implementation, IEnumerable<(string Lifetime, IEnumerable<string> Services, string Tag)>)? Transform(
+    private (string Implementation, IEnumerable<(string Lifetime, IEnumerable<string> Services, string Tag, string Key)>)? Transform(
         GeneratorSyntaxContext context)
     {
         if (context.Node is not ClassDeclarationSyntax classDeclaration)
@@ -47,7 +47,9 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             .SelectMany(a => a.Attributes)
             .Where(a => Helpers.IsRegistrationAttribute(a, context.SemanticModel))
             .Select(a => (Helpers.GetAttributeName(a).Replace("Register", "").Replace("Attribute", ""),
-                GetServiceNames(a, context.SemanticModel, implementation), Helpers.GetPropertyArgument(a, context.SemanticModel, "Tag")));
+                GetServiceNames(a, context.SemanticModel, implementation), 
+                Helpers.GetPropertyArgument(a, context.SemanticModel, "Tag"),
+                Helpers.GetPropertyArgument(a, context.SemanticModel, "Key")));
 
         return (Helpers.GetFullName(implementation), registrationAttributes);
     }
@@ -55,25 +57,26 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
     private void Execute(
         SourceProductionContext context,
         Compilation complation,
-        ImmutableArray<(string Implementation, IEnumerable<(string Lifetime, IEnumerable<string> Services, string Tag)> Attributes)?> classes)
+        ImmutableArray<(string Implementation, IEnumerable<(string Lifetime, IEnumerable<string> Services, string Tag, string Key)> Attributes)?> classes)
     {
-        if (!complation.ReferencedAssemblyNames.Any(r => r.Name == "Microsoft.Extensions.DependencyInjection"))
+        if (!complation.ReferencedAssemblyNames.Any(r => 
+            r.Name == "Microsoft.Extensions.DependencyInjection" && r.Version >= new Version(3, 1, 32)))
             return;
 
-        var taggedRegistrations = new Dictionary<string, Dictionary<string, List<(string, IEnumerable<string>)>>>();
-        var untaggedRegistrations = new Dictionary<string, List<(string, IEnumerable<string>)>>();
+        var taggedRegistrations = new Dictionary<string, Dictionary<string, List<(string Imp, IEnumerable<string> Services, string Key)>>>();
+        var untaggedRegistrations = new Dictionary<string, List<(string Imp, IEnumerable<string> Services, string Key)>>();
 
         try
         {
             foreach (var registration in classes.Where(r => r.HasValue))
             {
-                foreach (var (Lifetime, Services, Tag) in registration.Value.Attributes)
+                foreach (var (Lifetime, Services, Tag, Key) in registration.Value.Attributes)
                 {
                     if (string.IsNullOrEmpty(Tag))
                     {
                         if (!untaggedRegistrations.ContainsKey(Lifetime))
                             untaggedRegistrations.Add(Lifetime, []);
-                        untaggedRegistrations[Lifetime].Add((registration.Value.Implementation, Services));
+                        untaggedRegistrations[Lifetime].Add((registration.Value.Implementation, Services, Key));
                     }
                     else
                     {
@@ -81,7 +84,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
                             taggedRegistrations.Add(Tag, []);
                         if (!taggedRegistrations[Tag].ContainsKey(Lifetime))
                             taggedRegistrations[Tag].Add(Lifetime, []);
-                        taggedRegistrations[Tag][Lifetime].Add((registration.Value.Implementation, Services));
+                        taggedRegistrations[Tag][Lifetime].Add((registration.Value.Implementation, Services, Key));
                     }
                 }
             }
@@ -141,29 +144,50 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
         }
     }
 
-
-    private string GetServiceRegistrations(Dictionary<string, List<(string, IEnumerable<string>)>> services, int indent = 0)
+    private string GetServiceRegistrations(Dictionary<string, List<(string Implementation, IEnumerable<string> Services, string Key)>> services, int indent = 0)
     {
         var fileContentBuilder = new StringBuilder();
 
         foreach (var registration in services)
         {
-            foreach (var (Implementation, Services) in registration.Value)
+            foreach (var (Implementation, Services, Key) in registration.Value)
             {
-                if (!Services.Any())
+                if (string.IsNullOrEmpty(Key))
                 {
-                    fileContentBuilder.AppendLineIndented($"services.Add{registration.Key}<{Implementation}>();", indent);
+                    if (!Services.Any())
+                    {
+                        fileContentBuilder.AppendLineIndented($"services.Add{registration.Key}<{Implementation}>();", indent);
+                    }
+                    else
+                    {
+                        fileContentBuilder.AppendLineIndented($"services.Add{registration.Key}<{Services.First()}, {Implementation}>();", indent);
+
+                        foreach (var service in Services.Skip(1))
+                        {
+                            if (registration.Key == Consts.Transient)
+                                fileContentBuilder.AppendLineIndented($"services.Add{registration.Key}<{service}, {Implementation}>();", indent);
+                            else
+                                fileContentBuilder.AppendLineIndented($"services.Add{registration.Key}(sp => ({service})sp.GetRequiredService<{Services.First()}>());", indent);
+                        }
+                    }
                 }
                 else
                 {
-                    fileContentBuilder.AppendLineIndented($"services.Add{registration.Key}<{Services.First()}, {Implementation}>();", indent);
-
-                    foreach (var service in Services.Skip(1))
+                    if (!Services.Any())
                     {
-                        if (registration.Key == "Transient")
-                            fileContentBuilder.AppendLineIndented($"services.Add{registration.Key}<{service}, {Implementation}>();", indent);
-                        else
-                            fileContentBuilder.AppendLineIndented($"services.Add{registration.Key}(sp => ({service})sp.GetRequiredService<{Services.First()}>());", indent);
+                        fileContentBuilder.AppendLineIndented($"services.AddKeyed{registration.Key}<{Implementation}>({Key});", indent);
+                    }
+                    else
+                    {
+                        fileContentBuilder.AppendLineIndented($"services.AddKeyed{registration.Key}<{Services.First()}, {Implementation}>({Key});", indent);
+
+                        foreach (var service in Services.Skip(1))
+                        {
+                            if (registration.Key == Consts.Transient)
+                                fileContentBuilder.AppendLineIndented($"services.AddKeyed{registration.Key}<{service}, {Implementation}>({Key});", indent);
+                            else
+                                fileContentBuilder.AppendLineIndented($"services.AddKeyed{registration.Key}({Key}, (sp, key) => ({service})sp.GetRequiredKeyedService<{Services.First()}>(key));", indent);
+                        }
                     }
                 }
             }

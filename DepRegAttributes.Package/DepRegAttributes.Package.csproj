@@ -11,7 +11,7 @@
 	<PropertyGroup>
 		<PackageId>DBaker.DepRegAttributes</PackageId>
 		<Authors>dalton_s_baker</Authors>
-		<Version>7.0.1</Version>
+		<Version>7.0.2</Version>
 		<PackageProjectUrl>https://github.com/dalton-baker/DepRegAttributes</PackageProjectUrl>
 		<!--<PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>-->
 		<RepositoryUrl>https://github.com/dalton-baker/DepRegAttributes</RepositoryUrl>
@@ -31,8 +31,13 @@
 		<DevelopmentDependency>true</DevelopmentDependency>
 
 		<PackageReleaseNotes>
+			### Version 7.0.2
+			- Adding Keyed services support.
+			- Added `Key` property on attributes when a project references Microsoft.Extensions.DependencyInjection version 8.0.0 or greater.
+
 			### Version 7.0.1
-			- Fixing nuget package tags
+			- Fixing nuget package tags and target framework
+
 			### Version 7.0.0
 			- Rewrote library to use source generation instead of reflection. *higher chance of bugs*
 			- Added an analyzer that tells a developer when an attribute is invalid.

@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System;
 using System.Text;
 
 namespace DepRegAttributes.Analyzer
@@ -18,10 +19,23 @@ namespace DepRegAttributes.Analyzer
             if (context.Compilation is not CSharpCompilation csharpCompilation)
                 return;
 
+            var diReferenceVersion = new Version(0, 0, 0, 0);
+            if (csharpCompilation.ReferencedAssemblyNames is not null)
+            {
+                foreach(var assembly in csharpCompilation.ReferencedAssemblyNames)
+                {
+                    if(assembly.Name == "Microsoft.Extensions.DependencyInjection")
+                    {
+                        diReferenceVersion = assembly.Version;
+                        break;
+                    }
+                }
+            }
+
             foreach (var attribute in Consts.AttributeList)
             {
                 context.AddSource($"{attribute}.g.cs",
-                    GetBaseAttributeFileContents(attribute, csharpCompilation.LanguageVersion));
+                    GetBaseAttributeFileContents(attribute, csharpCompilation.LanguageVersion, diReferenceVersion));
             }
 
             if (csharpCompilation.LanguageVersion >= LanguageVersion.CSharp10)
@@ -32,7 +46,7 @@ namespace DepRegAttributes.Analyzer
             }
         }
 
-        private string GetBaseAttributeFileContents(string attributeName, LanguageVersion languageVersion)
+        private string GetBaseAttributeFileContents(string attributeName, LanguageVersion languageVersion, Version diPackageVersion)
         {
             var builder = new StringBuilder();
             builder.AppendLine("//Auto Generated File");
@@ -46,6 +60,11 @@ namespace DepRegAttributes.Analyzer
             builder.AppendLine("    {");
             builder.AppendLine("        public object Tag { get; set; }");
             builder.AppendLine();
+            if(diPackageVersion >= new Version(8, 0, 0, 0))
+            {
+                builder.AppendLine("        public object Key { get; set; }");
+                builder.AppendLine();
+            }
             builder.AppendLine($"        public {attributeName}(params Type[] types)");
             builder.AppendLine("        {");
             builder.AppendLine("            Type[] typesInternal = types;");

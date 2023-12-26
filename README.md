@@ -136,4 +136,16 @@ public class ExampleService
 }
 ```
 
-You can look at examples of usage in the DepRegAttributes.ExampleLibrary and unit test projects.
+
+## Keyed Services
+For projects referencing version 8.0.0 or higher of the Microsoft.Extensions.DependencyInjection library, you can use the new keyed services feature. You can read more about keyed services in the [.NET 8 Release Notes](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8#keyed-di-services).
+
+To register a keyed service, pass a key to the `Key` property of any register attribute:
+```c#
+[RegisterTransient(Key = "Example")]
+public class ExampleService
+{
+    //Equivalent:
+    //serviceCollection.AddKeyedTransient<ExampleService>("Example");
+}
+```

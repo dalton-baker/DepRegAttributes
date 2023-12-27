@@ -37,7 +37,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
         if (symbol is not INamedTypeSymbol implementation)
             return null;
 
-        if (implementation.IsAbstract || implementation.IsStatic)
+        if (implementation.IsAbstract || implementation.IsStatic || implementation.DeclaredAccessibility != Accessibility.Public)
             return null;
 
         if (!implementation.Constructors.Any(c => c.DeclaredAccessibility == Accessibility.Public))
@@ -198,7 +198,8 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
 
     private IEnumerable<string> GetServiceNames(AttributeSyntax attributeSyntax, SemanticModel semanticModel, INamedTypeSymbol implementation)
         => Helpers.GetServices(attributeSyntax, semanticModel, implementation)
-            .Where(s => Helpers.IsTypeInHierarchy(s, implementation)).Select(Helpers.GetFullName);
+            .Where(s => Helpers.IsTypeInHierarchy(s, implementation) && s.DeclaredAccessibility == Accessibility.Public)
+            .Select(Helpers.GetFullName);
 
 }
 

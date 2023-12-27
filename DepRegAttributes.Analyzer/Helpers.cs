@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace DepRegAttributes.Analyzer
 {
@@ -93,6 +94,12 @@ namespace DepRegAttributes.Analyzer
 
         public static string GetFullName(ISymbol symbol)
         {
+            var (@namespace, type) = GetNamespaceAndName(symbol);
+            return string.IsNullOrEmpty(@namespace) ? type : $"{@namespace}.{type}";
+        }
+
+        public static (string Namespace, string TypeName) GetNamespaceAndName(ISymbol symbol)
+        {
             var nestedTypes = new List<string>();
             var type = symbol;
             while (type is not null)
@@ -100,11 +107,10 @@ namespace DepRegAttributes.Analyzer
                 nestedTypes.Insert(0, type.Name);
                 type = type.ContainingType;
             }
-
             var typeName = string.Join(".", nestedTypes);
 
             if (symbol.ContainingNamespace is null || symbol.ContainingNamespace.IsGlobalNamespace)
-                return typeName;
+                return (string.Empty, typeName);
 
             var namespaces = new List<string>();
             var currentNamespace = symbol.ContainingNamespace;
@@ -115,13 +121,13 @@ namespace DepRegAttributes.Analyzer
                 currentNamespace = currentNamespace.ContainingNamespace;
             }
 
-            return $"{string.Join(".", namespaces)}.{typeName}";
+            return (string.Join(".", namespaces), typeName);
         }
 
-        public static string GetPropertyArgument(AttributeSyntax attributeSyntax, SemanticModel semanticModel, string tag)
+        public static (string Namespace, string Name) GetPropertyArgument(AttributeSyntax attributeSyntax, SemanticModel semanticModel, string tag)
         {
             if (attributeSyntax.ArgumentList is null)
-                return string.Empty;
+                return (string.Empty, string.Empty);
 
 
             foreach (var argument in attributeSyntax.ArgumentList.Arguments)
@@ -134,8 +140,8 @@ namespace DepRegAttributes.Analyzer
                     var symbol = semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
                     if (symbol is INamedTypeSymbol namedTypeSymbol)
                     {
-                        // Access the namespace and name
-                        return $"{GetFullName(namedTypeSymbol)}.{memberAccess.Name}";
+                        var (@namespace, name) = GetNamespaceAndName(namedTypeSymbol);
+                        return (@namespace, $"{name}.{memberAccess.Name}");
                     }
                 }
 
@@ -146,34 +152,40 @@ namespace DepRegAttributes.Analyzer
                     {
                         if(fieldSymbol.DeclaredAccessibility == Accessibility.Public)
                         {
-                            return $"{GetFullName(fieldSymbol.ContainingType)}.{fieldSymbol.Name}";
+                            var (@namespace, name) = GetNamespaceAndName(fieldSymbol.ContainingType);
+                            return (@namespace, $"{name}.{fieldSymbol.Name}");
                         }
 
                         if(fieldSymbol.ConstantValue is not null)
                         {
                             if (fieldSymbol.ConstantValue is string value)
                             {
-                                return $"\"{value}\"";
+                                return (string.Empty, $"\"{value}\"");
                             }
-                            return fieldSymbol.ConstantValue.ToString();
+                            return (string.Empty, fieldSymbol.ConstantValue.ToString());
                         }
 
-                        return string.Empty;
+                        return (string.Empty, string.Empty);
                     }
                 }
 
-                return argument.Expression.ToFullString();
+                return (string.Empty, argument.Expression.ToFullString());
             }
 
-            return string.Empty;
+            return (string.Empty, string.Empty);
         }
 
         public static string GetLibraryNamespace(this Compilation complation)
-            => Consts.LibraryNamespace; //$"{complation.Assembly.Name}.{Consts.LibraryNamespace}";
+            => string.IsNullOrEmpty(complation.AssemblyName) ? Consts.LibraryNamespace : $"{complation.AssemblyName}.{Consts.LibraryNamespace}";
+        
+        public static string TrimAssemblyName(this Compilation complation, string typeName)
+            => !string.IsNullOrEmpty(complation.AssemblyName) && typeName.StartsWith($"{complation.AssemblyName}.")
+                ? typeName.Remove(0, $"{complation.AssemblyName}.".Length)
+                : typeName;
     }
 
 
-    public class Consts
+    public static class Consts
     {
         public const string LibraryNamespace = "DepRegAttributes";
 
@@ -181,6 +193,10 @@ namespace DepRegAttributes.Analyzer
         public const string Singleton = nameof(Singleton);
         public const string Scoped = nameof(Scoped);
 
-        public static List<string> AttributeList => new() { $"Register{Transient}Attribute", $"Register{Singleton}Attribute", $"Register{Scoped}Attribute" };
+        public const string TansientAttribute = $"Register{Transient}Attribute";
+        public const string SingletonAttribute = $"Register{Singleton}Attribute";
+        public const string ScopedAttribute = $"Register{Scoped}Attribute";
+
+        public static List<string> AttributeList => new() { TansientAttribute, SingletonAttribute, ScopedAttribute };
     }
 }

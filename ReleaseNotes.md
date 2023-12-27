@@ -1,3 +1,10 @@
+### Version 7.0.3
+ - Fixing nested types, previously the parent class was not being included.
+ - Adding analyzers for private nested types.
+ - Fixing multii-project bug. Projects conflict eachother if generated code is in the same namespace. 
+   - Fixed this by moving all generated code into the project assembly. 
+   - More info here: https://andrewlock.net/creating-a-source-generator-part-7-solving-the-source-generator-marker-attribute-problem-part1/
+
 ### Version 7.0.2
  - Adding Keyed services support.
  - Added `Key` property on attributes when a project references Microsoft.Extensions.DependencyInjection version 8.0.0 or greater.

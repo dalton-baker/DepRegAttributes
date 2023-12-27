@@ -9,32 +9,49 @@ namespace DepRegAttributes.Analyzer
     public static class Helpers
     {
         public static IEnumerable<INamedTypeSymbol> GetServices(AttributeSyntax attributeSyntax, SemanticModel semanticModel, INamedTypeSymbol implementation)
+            => GetServicesWithLocations(attributeSyntax, semanticModel, implementation).Select(s => s.Service);
+
+        public static IEnumerable<(INamedTypeSymbol Service, Location Location)> GetServicesWithLocations(
+            AttributeSyntax attributeSyntax, SemanticModel semanticModel, INamedTypeSymbol implementation)
         {
-            var services = new List<INamedTypeSymbol>();
+            var services = new List<(INamedTypeSymbol, Location)>();
 
             if (attributeSyntax.Name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList is not null)
             {
-                services.AddRange(genericNameSyntax.TypeArgumentList.Arguments
-                    .OfType<SimpleNameSyntax>()
-                    .Select(a => semanticModel.GetSymbolInfo(a).Symbol)
-                    .OfType<INamedTypeSymbol>());
+                foreach (var argument in genericNameSyntax.TypeArgumentList.Arguments)
+                {
+                    if (argument is SimpleNameSyntax simpleName)
+                    {
+                        var symbol = semanticModel.GetSymbolInfo(simpleName).Symbol;
+                        if (symbol is INamedTypeSymbol namedTypeSymbol)
+                            services.Add((namedTypeSymbol, argument.GetLocation()));
+                    }
+                }
             }
 
             if (attributeSyntax.ArgumentList is not null)
             {
-                services.AddRange(attributeSyntax.ArgumentList.Arguments
-                    .Select(a => a.Expression)
-                    .OfType<TypeOfExpressionSyntax>()
-                    .Select(a => semanticModel.GetTypeInfo(a.Type).Type ?? semanticModel.GetSymbolInfo(a.Type).Symbol)
-                    .OfType<INamedTypeSymbol>());
+                foreach (var argument in attributeSyntax.ArgumentList.Arguments)
+                {
+                    if (argument.Expression is TypeOfExpressionSyntax typeExpression)
+                    {
+                        var symbol = semanticModel.GetTypeInfo(typeExpression.Type).Type ??
+                            semanticModel.GetSymbolInfo(typeExpression.Type).Symbol;
+                        if (symbol is INamedTypeSymbol namedTypeSymbol)
+                            services.Add((namedTypeSymbol, argument.GetLocation()));
+                    }
+                }
             }
 
-            if (!services.Any() && implementation is INamedTypeSymbol namedSymbol)
+            if (services.Count == 0 && implementation is INamedTypeSymbol namedSymbol)
             {
-                var impliedInterface = namedSymbol.Interfaces.FirstOrDefault(i => i.Name == $"I{implementation.Name}");
-                if (impliedInterface is not null)
+                foreach (var interfaceSymbol in namedSymbol.Interfaces)
                 {
-                    services.Add(impliedInterface);
+                    if (interfaceSymbol.Name == $"I{implementation.Name}")
+                    {
+                        services.Add((interfaceSymbol, attributeSyntax.GetLocation()));
+                        break;
+                    }
                 }
             }
 
@@ -76,8 +93,18 @@ namespace DepRegAttributes.Analyzer
 
         public static string GetFullName(ISymbol symbol)
         {
+            var nestedTypes = new List<string>();
+            var type = symbol;
+            while (type is not null)
+            {
+                nestedTypes.Insert(0, type.Name);
+                type = type.ContainingType;
+            }
+
+            var typeName = string.Join(".", nestedTypes);
+
             if (symbol.ContainingNamespace is null || symbol.ContainingNamespace.IsGlobalNamespace)
-                return symbol.Name;
+                return typeName;
 
             var namespaces = new List<string>();
             var currentNamespace = symbol.ContainingNamespace;
@@ -88,7 +115,7 @@ namespace DepRegAttributes.Analyzer
                 currentNamespace = currentNamespace.ContainingNamespace;
             }
 
-            return $"{string.Join(".", namespaces)}.{symbol.Name}";
+            return $"{string.Join(".", namespaces)}.{typeName}";
         }
 
         public static string GetPropertyArgument(AttributeSyntax attributeSyntax, SemanticModel semanticModel, string tag)

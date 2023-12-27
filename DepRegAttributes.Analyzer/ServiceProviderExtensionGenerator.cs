@@ -26,7 +26,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             (spc, source) => Execute(spc, source.Left, source.Right));
     }
 
-    private (string Implementation, IEnumerable<(string Lifetime, IEnumerable<string> Services, string Tag, string Key)>)? Transform(
+    private ((string @namespace, string name) Implementation, IEnumerable<(string Lifetime, IEnumerable<(string @namespace, string name)> Services, (string @namespace, string name) Tag, (string @namespace, string name) Key)>)? Transform(
         GeneratorSyntaxContext context)
     {
         if (context.Node is not ClassDeclarationSyntax classDeclaration)
@@ -51,13 +51,13 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
                 Helpers.GetPropertyArgument(a, context.SemanticModel, "Tag"),
                 Helpers.GetPropertyArgument(a, context.SemanticModel, "Key")));
 
-        return (Helpers.GetFullName(implementation), registrationAttributes);
+        return (Helpers.GetNamespaceAndName(implementation), registrationAttributes);
     }
 
     private void Execute(
         SourceProductionContext context,
         Compilation complation,
-        ImmutableArray<(string Implementation, IEnumerable<(string Lifetime, IEnumerable<string> Services, string Tag, string Key)> Attributes)?> classes)
+        ImmutableArray<((string @namespace, string name) Implementation, IEnumerable<(string Lifetime, IEnumerable<(string @namespace, string name)> Services, (string @namespace, string name) Tag, (string @namespace, string name) Key)> Attributes)?> classes)
     {
         if (!complation.ReferencedAssemblyNames.Any(r => 
             r.Name == "Microsoft.Extensions.DependencyInjection" && r.Version >= new Version(3, 1, 32)))
@@ -65,26 +65,34 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
 
         var taggedRegistrations = new Dictionary<string, Dictionary<string, List<(string Imp, IEnumerable<string> Services, string Key)>>>();
         var untaggedRegistrations = new Dictionary<string, List<(string Imp, IEnumerable<string> Services, string Key)>>();
+        var namespaces = new List<string>();
+
 
         try
         {
             foreach (var registration in classes.Where(r => r.HasValue))
             {
+                namespaces.Add(registration.Value.Implementation.@namespace);
                 foreach (var (Lifetime, Services, Tag, Key) in registration.Value.Attributes)
                 {
-                    if (string.IsNullOrEmpty(Tag))
+                    if (string.IsNullOrEmpty(Tag.name))
                     {
                         if (!untaggedRegistrations.ContainsKey(Lifetime))
                             untaggedRegistrations.Add(Lifetime, []);
-                        untaggedRegistrations[Lifetime].Add((registration.Value.Implementation, Services, Key));
+                        untaggedRegistrations[Lifetime].Add((registration.Value.Implementation.name, Services.Select(s => s.name), Key.name));
+                        namespaces.AddRange(Services.Select(s => s.@namespace));
+                        namespaces.Add(Key.@namespace);
                     }
                     else
                     {
-                        if (!taggedRegistrations.ContainsKey(Tag))
-                            taggedRegistrations.Add(Tag, []);
-                        if (!taggedRegistrations[Tag].ContainsKey(Lifetime))
-                            taggedRegistrations[Tag].Add(Lifetime, []);
-                        taggedRegistrations[Tag][Lifetime].Add((registration.Value.Implementation, Services, Key));
+                        if (!taggedRegistrations.ContainsKey(Tag.name))
+                            taggedRegistrations.Add(Tag.name, []);
+                        if (!taggedRegistrations[Tag.name].ContainsKey(Lifetime))
+                            taggedRegistrations[Tag.name].Add(Lifetime, []);
+                        taggedRegistrations[Tag.name][Lifetime].Add((registration.Value.Implementation.name, Services.Select(s => s.name), Key.name));
+                        namespaces.AddRange(Services.Select(s => s.@namespace));
+                        namespaces.Add(Key.@namespace);
+                        namespaces.Add(Tag.@namespace);
                     }
                 }
             }
@@ -93,6 +101,10 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             fileContentBuilder.AppendLine("//Auto Generated File");
             fileContentBuilder.AppendLine();
             fileContentBuilder.AppendLine("using Microsoft.Extensions.DependencyInjection;");
+            foreach (var @namespace in namespaces.Distinct().Where(s => !string.IsNullOrEmpty(s)))
+            {
+                fileContentBuilder.AppendLine($"using {@namespace};");
+            }
             fileContentBuilder.AppendLine();
             fileContentBuilder.AppendLine($"namespace {complation.GetLibraryNamespace()}");
             fileContentBuilder.AppendLine("{");
@@ -196,10 +208,10 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
         return fileContentBuilder.ToString();
     }
 
-    private IEnumerable<string> GetServiceNames(AttributeSyntax attributeSyntax, SemanticModel semanticModel, INamedTypeSymbol implementation)
+    private IEnumerable<(string, string)> GetServiceNames(AttributeSyntax attributeSyntax, SemanticModel semanticModel, INamedTypeSymbol implementation)
         => Helpers.GetServices(attributeSyntax, semanticModel, implementation)
             .Where(s => Helpers.IsTypeInHierarchy(s, implementation) && s.DeclaredAccessibility == Accessibility.Public)
-            .Select(Helpers.GetFullName);
+            .Select(Helpers.GetNamespaceAndName);
 
 }
 

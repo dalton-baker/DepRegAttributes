@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,6 +11,11 @@ namespace DepRegAttributes.Analyzer
     {
         public static IEnumerable<INamedTypeSymbol> GetServices(AttributeSyntax attributeSyntax, SemanticModel semanticModel, INamedTypeSymbol implementation)
             => GetServicesWithLocations(attributeSyntax, semanticModel, implementation).Select(s => s.Service);
+
+        public static IEnumerable<INamedTypeSymbol> GetFiltered(AttributeSyntax attributeSyntax, SemanticModel semanticModel, INamedTypeSymbol implementation)
+            => GetServicesWithLocations(attributeSyntax, semanticModel, implementation)
+                .Select(s => s.Service)
+                .Where(s => IsTypeInHierarchy(s, implementation) && s.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal);
 
         public static IEnumerable<(INamedTypeSymbol Service, Location Location)> GetServicesWithLocations(
             AttributeSyntax attributeSyntax, SemanticModel semanticModel, INamedTypeSymbol implementation)
@@ -97,42 +103,44 @@ namespace DepRegAttributes.Analyzer
                 "RegisterTransientAttribute" or "RegisterSingletonAttribute" or "RegisterScopedAttribute";
         }
 
-        public static string GetFullName(ISymbol symbol)
+        public static (string Namespace, string TypeName) GetNamespaceAndName(INamedTypeSymbol symbol)
         {
-            var (@namespace, type) = GetNamespaceAndName(symbol);
-            return string.IsNullOrEmpty(@namespace) ? type : $"{@namespace}.{type}";
+            var symbolDisplayFormat = symbol.IsGenericType
+                ? new SymbolDisplayFormat(
+                    typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
+                    genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+                    miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes)
+                : new SymbolDisplayFormat(
+                    typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
+                    miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
+            var typeName = symbol.ToDisplayString(symbolDisplayFormat);
+
+            var typeNamespace = symbol.ContainingNamespace is null
+                ? string.Empty
+                : symbol.ContainingNamespace.ToDisplayString();
+
+            return (typeNamespace, typeName);
         }
 
-        public static (string Namespace, string TypeName) GetNamespaceAndName(ISymbol symbol)
+        public static string GetTypeName(this INamedTypeSymbol symbol)
         {
-            var nestedTypes = new List<string>();
-            var type = symbol;
-            while (type is not null)
-            {
-                nestedTypes.Insert(0, type.Name);
-                type = type.ContainingType;
-            }
-            var typeName = string.Join(".", nestedTypes);
+            var symbolDisplayFormat = symbol.IsGenericType
+                ? new SymbolDisplayFormat(
+                    typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
+                    genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+                    miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes)
+                : new SymbolDisplayFormat(
+                    typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
+                    miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 
-            if (symbol.ContainingNamespace is null || symbol.ContainingNamespace.IsGlobalNamespace)
-                return (string.Empty, typeName);
-
-            var namespaces = new List<string>();
-            var currentNamespace = symbol.ContainingNamespace;
-
-            while (!currentNamespace.IsGlobalNamespace)
-            {
-                namespaces.Insert(0, currentNamespace.Name);
-                currentNamespace = currentNamespace.ContainingNamespace;
-            }
-
-            return (string.Join(".", namespaces), typeName);
+            return symbol.ToDisplayString(symbolDisplayFormat);
         }
 
-        public static (string Namespace, string Name) GetPropertyArgument(AttributeSyntax attributeSyntax, SemanticModel semanticModel, string tag)
+        public static string GetPropertyArgument(AttributeSyntax attributeSyntax, SemanticModel semanticModel, string tag)
         {
             if (attributeSyntax.ArgumentList is null)
-                return (string.Empty, string.Empty);
+                return string.Empty;
 
 
             foreach (var argument in attributeSyntax.ArgumentList.Arguments)
@@ -144,10 +152,7 @@ namespace DepRegAttributes.Analyzer
                 {
                     var symbol = semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
                     if (symbol is INamedTypeSymbol namedTypeSymbol)
-                    {
-                        var (@namespace, name) = GetNamespaceAndName(namedTypeSymbol);
-                        return (@namespace, $"{name}.{memberAccess.Name}");
-                    }
+                        return $"{namedTypeSymbol.GetTypeName()}.{memberAccess.Name}";
                 }
 
                 else if (argument.Expression is IdentifierNameSyntax identifierName)
@@ -155,29 +160,97 @@ namespace DepRegAttributes.Analyzer
                     var symbol = semanticModel.GetSymbolInfo(identifierName).Symbol;
                     if (symbol is IFieldSymbol fieldSymbol)
                     {
-                        if(fieldSymbol.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal)
-                        {
-                            var (@namespace, name) = GetNamespaceAndName(fieldSymbol.ContainingType);
-                            return (@namespace, $"{name}.{fieldSymbol.Name}");
-                        }
+                        if (fieldSymbol.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal)
+                            return $"{fieldSymbol.ContainingType.GetTypeName()}.{fieldSymbol.Name}";
 
-                        if(fieldSymbol.ConstantValue is not null)
+                        if (fieldSymbol.ConstantValue is not null)
                         {
                             if (fieldSymbol.ConstantValue is string value)
                             {
-                                return (string.Empty, $"\"{value}\"");
+                                return $"\"{value}\"";
                             }
-                            return (string.Empty, fieldSymbol.ConstantValue.ToString());
+                            return fieldSymbol.ConstantValue.ToString();
                         }
 
-                        return (string.Empty, string.Empty);
+                        return string.Empty;
                     }
                 }
 
-                return (string.Empty, argument.Expression.ToFullString());
+                return argument.Expression.ToFullString();
             }
 
-            return (string.Empty, string.Empty);
+            return string.Empty;
+        }
+
+        public static HashSet<string> GetPropertyNamespaces(AttributeSyntax attributeSyntax, SemanticModel semanticModel, string tag)
+        {
+            var namespaces = new List<string>();
+
+            if (attributeSyntax.ArgumentList is null)
+                return [];
+
+            foreach (var argument in attributeSyntax.ArgumentList.Arguments)
+            {
+                if (argument.NameEquals is null || argument.NameEquals.Name.Identifier.Text != tag)
+                    continue;
+
+                if (argument.Expression is MemberAccessExpressionSyntax memberAccess)
+                {
+                    var symbol = semanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
+                    if (symbol is INamedTypeSymbol namedTypeSymbol)
+                        namespaces.AddRange(namedTypeSymbol.GetNamespaces());
+                }
+
+                else if (argument.Expression is IdentifierNameSyntax identifierName)
+                {
+                    var symbol = semanticModel.GetSymbolInfo(identifierName).Symbol;
+                    if (symbol is IFieldSymbol fieldSymbol)
+                    {
+                        if (fieldSymbol.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal)
+                            namespaces.Add(fieldSymbol.ContainingNamespace is null ? string.Empty : fieldSymbol.ContainingNamespace.ToDisplayString());
+                    }
+                }
+            }
+
+            return new HashSet<string>(namespaces);
+        }
+
+
+        public static HashSet<string> GetNamespaces(this INamedTypeSymbol symbol)
+        {
+            var namespaces = new List<string>
+            {
+                symbol.ContainingNamespace is null ? string.Empty : symbol.ContainingNamespace.ToDisplayString()
+            };
+
+            if (symbol.IsGenericType)
+            {
+                foreach (var arg in symbol.TypeArguments)
+                {
+                    namespaces.Add(arg.ContainingNamespace is null ? string.Empty : arg.ContainingNamespace.ToDisplayString());
+                    if(arg is INamedTypeSymbol namedArg)
+                    {
+                        namespaces.AddRange(GetNamespaces(namedArg));
+                    }
+                }
+            }
+
+            namespaces.RemoveAll(string.IsNullOrEmpty);
+            return new HashSet<string>(namespaces);
+        }
+
+        public static (IEnumerable<string> Names, IEnumerable<string> Namespaces) GetNameAndNamespaces(this IEnumerable<INamedTypeSymbol> symbols)
+        {
+            var names = new List<string>();
+            var namespaces = new List<string>();
+
+            foreach (var symbol in symbols)
+            {
+                names.Add(symbol.GetTypeName());
+                namespaces.AddRange(symbol.GetNamespaces());
+            }
+
+            return (names, new HashSet<string>(namespaces));
         }
 
         public static string GetLibraryNamespace(this Compilation complation)

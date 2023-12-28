@@ -140,6 +140,15 @@ namespace DepRegAttributes.Analyzer
             INamedTypeSymbol implementation, 
             AttributeSyntax attribute)
         {
+            if (implementation.IsUnboundGenericType)
+            {
+                context.ReportDiagnostic(
+                    Diagnostic.Create(
+                        InvalidImplementationType,
+                        implementation.Locations[0],
+                        $"An unbound generic cannot use the {attribute.Name} attribute"));
+            }
+
             if (implementation.IsAbstract)
             {
                 context.ReportDiagnostic(

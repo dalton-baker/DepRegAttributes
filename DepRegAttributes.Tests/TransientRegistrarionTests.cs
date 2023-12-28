@@ -1,4 +1,5 @@
 ﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses;
+using DepRegAttributes.ExampleLibrary.Test;
 
 namespace DepRegAttributes.Tests;
 
@@ -80,5 +81,33 @@ public class TransientRegistrarionTests : UnitTestBase
         Assert.IsNotNull(transient1);
         Assert.IsNotNull(transient2);
         Assert.AreNotEqual(transient1, transient2);
+    }
+
+
+    [TestMethod]
+    public void GetTransientWithTypedInterfaceTest()
+    {
+        //Arrange
+        var sut = CreateSut();
+
+        //Act
+        var transient = sut.GetRequiredService<ITransientClassWithTypedInterface<string>>();
+
+        //Assert
+        Assert.IsNotNull(transient);
+    }
+
+
+    [TestMethod]
+    public void GetTransientWithTypedInterfaceInOtherNamespaceTest()
+    {
+        //Arrange
+        var sut = CreateSut();
+
+        //Act
+        var transient = sut.GetRequiredService<ITransientClassWithTypedInterface<ITypeInOtherNamespace>>();
+
+        //Assert
+        Assert.IsNotNull(transient);
     }
 }

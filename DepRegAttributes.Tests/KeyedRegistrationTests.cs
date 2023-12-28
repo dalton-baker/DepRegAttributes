@@ -139,6 +139,19 @@ public class KeyedRegistrationTests : UnitTestBase
     }
 
     [TestMethod]
+    public void GetTypeKeyedTest()
+    {
+        //Arrange
+        var sut = CreateSut();
+
+        //Act
+        var service = sut.GetKeyedService<IKeyedWithType>(typeof(TypeKey));
+
+        //Assert
+        Assert.IsNotNull(service);
+    }
+
+    [TestMethod]
     public void GetKeyedAndTagged()
     {
         //Arrange

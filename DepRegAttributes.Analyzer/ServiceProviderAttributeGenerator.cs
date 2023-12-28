@@ -43,7 +43,7 @@ namespace DepRegAttributes.Analyzer
 
             if (csharpCompilation.LanguageVersion >= LanguageVersion.CSharp10)
             {
-                context.AddSource($"{Consts.LibraryNamespace}GlobalUsing.g.cs",
+                context.AddSource($"RegisterAttributeGlobalUsing.g.cs",
                     $"//Auto Generated File\n" +
                     $"global using {@namespace};");
             }

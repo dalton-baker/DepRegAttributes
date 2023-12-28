@@ -254,7 +254,7 @@ namespace DepRegAttributes.Analyzer
         }
 
         public static string GetLibraryNamespace(this Compilation complation)
-            => string.IsNullOrEmpty(complation.AssemblyName) ? Consts.LibraryNamespace : $"{complation.AssemblyName}.{Consts.LibraryNamespace}";
+            => string.IsNullOrEmpty(complation.AssemblyName) ? Consts.LibraryNamespace : complation.AssemblyName;
     }
 
 

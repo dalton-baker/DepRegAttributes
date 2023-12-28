@@ -4,6 +4,7 @@
  - Adding warning analyzer for Tags and Keys that are array initializers.
  - Adding support for generic service types.
  - Adding warning analyzer for unbound generics.
+ - Updating namespace to the project assembly.
 
 ### Version 7.0.3
  - Fixing nested types, previously the parent class was not being included.

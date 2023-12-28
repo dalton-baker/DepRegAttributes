@@ -115,7 +115,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             fileContentBuilder.AppendLine();
             fileContentBuilder.AppendLine($"namespace {complation.GetLibraryNamespace()}");
             fileContentBuilder.AppendLine("{");
-            fileContentBuilder.AppendLine("    public static class ServiceProviderExtensions");
+            fileContentBuilder.AppendLine("    public static class RegisterAttributeServiceProviderExtensions");
             fileContentBuilder.AppendLine("    {");
 
             fileContentBuilder.AppendLine("        public static IServiceCollection RegisterDependenciesByAttribute(this IServiceCollection services, params object[] includeTags)");

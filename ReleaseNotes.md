@@ -1,3 +1,8 @@
+### Version 7.0.4
+ - Fixing `typeof()` arguments for Key or Tag. These were being picked up and used as a service type.
+ - Allowing internal classes to be registered.
+ - Adding warning analyzer for Tags and Keys that are array initializers.
+
 ### Version 7.0.3
  - Fixing nested types, previously the parent class was not being included.
  - Adding analyzers for private nested types.

@@ -1,9 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
-using System;
+using System.Linq;
 
 namespace DepRegAttributes.Analyzer
 {
@@ -17,7 +16,9 @@ namespace DepRegAttributes.Analyzer
         {
             var services = new List<(INamedTypeSymbol, Location)>();
 
-            if (attributeSyntax.Name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList is not null)
+            //Generic arguments
+            if (attributeSyntax.Name is GenericNameSyntax genericNameSyntax &&
+                genericNameSyntax.TypeArgumentList is not null)
             {
                 foreach (var argument in genericNameSyntax.TypeArgumentList.Arguments)
                 {
@@ -30,11 +31,15 @@ namespace DepRegAttributes.Analyzer
                 }
             }
 
+            //Constructor arguments
             if (attributeSyntax.ArgumentList is not null)
             {
                 foreach (var argument in attributeSyntax.ArgumentList.Arguments)
                 {
-                    if (argument.Expression is TypeOfExpressionSyntax typeExpression)
+                    if (argument.NameEquals?.Name is not null)
+                        continue;
+
+                    else if (argument.Expression is TypeOfExpressionSyntax typeExpression)
                     {
                         var symbol = semanticModel.GetTypeInfo(typeExpression.Type).Type ??
                             semanticModel.GetSymbolInfo(typeExpression.Type).Symbol;
@@ -150,7 +155,7 @@ namespace DepRegAttributes.Analyzer
                     var symbol = semanticModel.GetSymbolInfo(identifierName).Symbol;
                     if (symbol is IFieldSymbol fieldSymbol)
                     {
-                        if(fieldSymbol.DeclaredAccessibility == Accessibility.Public)
+                        if(fieldSymbol.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal)
                         {
                             var (@namespace, name) = GetNamespaceAndName(fieldSymbol.ContainingType);
                             return (@namespace, $"{name}.{fieldSymbol.Name}");
@@ -177,11 +182,6 @@ namespace DepRegAttributes.Analyzer
 
         public static string GetLibraryNamespace(this Compilation complation)
             => string.IsNullOrEmpty(complation.AssemblyName) ? Consts.LibraryNamespace : $"{complation.AssemblyName}.{Consts.LibraryNamespace}";
-        
-        public static string TrimAssemblyName(this Compilation complation, string typeName)
-            => !string.IsNullOrEmpty(complation.AssemblyName) && typeName.StartsWith($"{complation.AssemblyName}.")
-                ? typeName.Remove(0, $"{complation.AssemblyName}.".Length)
-                : typeName;
     }
 
 

@@ -37,10 +37,10 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
         if (symbol is not INamedTypeSymbol implementation)
             return null;
 
-        if (implementation.IsAbstract || implementation.IsStatic || implementation.DeclaredAccessibility != Accessibility.Public)
+        if (implementation.IsAbstract || implementation.IsStatic || implementation.DeclaredAccessibility is not (Accessibility.Public or Accessibility.Internal))
             return null;
 
-        if (!implementation.Constructors.Any(c => c.DeclaredAccessibility == Accessibility.Public))
+        if (!implementation.Constructors.Any(c => c.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal))
             return null;
 
         var registrationAttributes = classDeclaration.AttributeLists
@@ -210,7 +210,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
 
     private IEnumerable<(string, string)> GetServiceNames(AttributeSyntax attributeSyntax, SemanticModel semanticModel, INamedTypeSymbol implementation)
         => Helpers.GetServices(attributeSyntax, semanticModel, implementation)
-            .Where(s => Helpers.IsTypeInHierarchy(s, implementation) && s.DeclaredAccessibility == Accessibility.Public)
+            .Where(s => Helpers.IsTypeInHierarchy(s, implementation) && s.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal)
             .Select(Helpers.GetNamespaceAndName);
 
 }

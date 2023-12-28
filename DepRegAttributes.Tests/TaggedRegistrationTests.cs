@@ -1,4 +1,5 @@
-﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses.TaggedServices;
+﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses.KeyedServices;
+using DepRegAttributes.ExampleLibrary.RegisteredClasses.TaggedServices;
 namespace DepRegAttributes.Tests;
 
 [TestClass]
@@ -155,6 +156,19 @@ public class TaggedRegistrationTests : UnitTestBase
 
         //Assert
         Assert.IsNull(service);
+    }
+
+    [TestMethod]
+    public void GetTypeTagged()
+    {
+        //Arrange
+        var sut = CreateSut(typeof(TypeTag));
+
+        //Act
+        var service = sut.GetService<ITaggedWithType>();
+
+        //Assert
+        Assert.IsNotNull(service);
     }
 
     [TestMethod]

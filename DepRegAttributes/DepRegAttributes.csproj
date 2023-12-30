@@ -17,7 +17,7 @@
 	<PropertyGroup>
 		<PackageId>DBaker.DepRegAttributes</PackageId>
 		<Authors>dalton_s_baker</Authors>
-		<Version>17.0.7</Version>
+		<Version>7.0.5</Version>
 		<PackageProjectUrl>https://github.com/dalton-baker/DepRegAttributes</PackageProjectUrl>
 		<!--<PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>-->
 		<RepositoryUrl>https://github.com/dalton-baker/DepRegAttributes</RepositoryUrl>

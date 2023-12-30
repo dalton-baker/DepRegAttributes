@@ -68,7 +68,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
 
         var taggedRegistrations = new Dictionary<string, Dictionary<string, List<(string Imp, IEnumerable<string> Services, string Key)>>>();
         var untaggedRegistrations = new Dictionary<string, List<(string Imp, IEnumerable<string> Services, string Key)>>();
-        var namespaces = new List<string>();
+        var namespaces = new List<string> { "System", "Microsoft.Extensions.DependencyInjection" };
 
         try
         {
@@ -107,7 +107,6 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             var fileContentBuilder = new StringBuilder();
             fileContentBuilder.AppendLine("//Auto Generated File");
             fileContentBuilder.AppendLine();
-            fileContentBuilder.AppendLine("using Microsoft.Extensions.DependencyInjection;");
             foreach (var @namespace in new HashSet<string>(namespaces))
             {
                 fileContentBuilder.AppendLine($"using {@namespace};");
@@ -115,9 +114,10 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             fileContentBuilder.AppendLine();
             fileContentBuilder.AppendLine($"namespace {complation.GetLibraryNamespace()}");
             fileContentBuilder.AppendLine("{");
-            fileContentBuilder.AppendLine("    public static class RegisterAttributeServiceProviderExtensions");
+            fileContentBuilder.AppendLine("    public static class ServiceProviderExtensions");
             fileContentBuilder.AppendLine("    {");
 
+            fileContentBuilder.AppendLine("        [Obsolete(\"Use 'AddByAttribute' instead\")]");
             fileContentBuilder.AppendLine("        public static IServiceCollection RegisterDependenciesByAttribute(this IServiceCollection services, params object[] includeTags)");
             fileContentBuilder.AppendLine("        {");
             fileContentBuilder.AppendLine("            return services.AddByAttribute(includeTags);");
@@ -126,7 +126,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
             fileContentBuilder.AppendLine("        public static IServiceCollection AddByAttribute(this IServiceCollection services, params object[] includeTags)");
             fileContentBuilder.AppendLine("        {");
 
-            fileContentBuilder.Append(GetServiceRegistrations(untaggedRegistrations, 12));
+            fileContentBuilder.Append(GetServiceRegistrations(untaggedRegistrations, complation.GetDiVersion() < new Version(8, 0, 0), 12));
 
             fileContentBuilder.AppendLine();
             fileContentBuilder.AppendLine("            foreach (object includedTag in includeTags)");
@@ -142,7 +142,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
                 fileContentBuilder.AppendLine($"                if(includedTag.Equals({taggedRegistration.Key}))");
                 fileContentBuilder.AppendLine("                {");
 
-                fileContentBuilder.Append(GetServiceRegistrations(taggedRegistration.Value, 20));
+                fileContentBuilder.Append(GetServiceRegistrations(taggedRegistration.Value, complation.GetDiVersion() < new Version(8, 0, 0), 20));
 
                 fileContentBuilder.AppendLine("                }");
             }
@@ -163,7 +163,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
         }
     }
 
-    private string GetServiceRegistrations(Dictionary<string, List<(string Implementation, IEnumerable<string> Services, string Key)>> services, int indent = 0)
+    private string GetServiceRegistrations(Dictionary<string, List<(string Implementation, IEnumerable<string> Services, string Key)>> services, bool excludeKeys, int indent = 0)
     {
         var fileContentBuilder = new StringBuilder();
 
@@ -171,7 +171,7 @@ public class ServiceProviderExtensionGenerator : IIncrementalGenerator
         {
             foreach (var (Implementation, Services, Key) in registration.Value)
             {
-                if (string.IsNullOrEmpty(Key))
+                if (string.IsNullOrEmpty(Key) || excludeKeys)
                 {
                     if (!Services.Any())
                     {

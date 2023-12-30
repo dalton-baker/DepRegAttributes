@@ -1,17 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+		<LangVersion>latest</LangVersion>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		
 		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.32" />
+		<ProjectReference Include="..\DepRegAttributes.Analyzer\DepRegAttributes.Analyzer.csproj">
+			<PrivateAssets>All</PrivateAssets>
+		</ProjectReference>
+	</ItemGroup>
 
 	<PropertyGroup>
 		<PackageId>DBaker.DepRegAttributes</PackageId>
 		<Authors>dalton_s_baker</Authors>
-		<Version>7.0.4</Version>
+		<Version>7.0.5</Version>
 		<PackageProjectUrl>https://github.com/dalton-baker/DepRegAttributes</PackageProjectUrl>
 		<!--<PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>-->
 		<RepositoryUrl>https://github.com/dalton-baker/DepRegAttributes</RepositoryUrl>
@@ -28,9 +34,13 @@
 		<RepositoryType>github</RepositoryType>
 		<Company />
 		<NoPackageAnalysis>true</NoPackageAnalysis>
-		<DevelopmentDependency>true</DevelopmentDependency>
 
 		<PackageReleaseNotes>
+			### Version 7.0.5
+			 - Adding project with real dll output to hold attributes.
+			 - Releasing attribute project, source generator, and analyzer as single project.
+			 - Moving service provider extensions to `{project assembly}.DepRegAttributes`
+			
 			### Version 7.0.4
 			 - Fixing `typeof()` arguments for Key or Tag. These were being picked up and used as a service type.
 			 - Allowing internal classes to be registered.
@@ -38,13 +48,13 @@
 			 - Adding support for generic service types.
 			 - Adding warning analyzer for unbound generics.
 			 - Updating namespace to the project assembly.
-			
+
 			### Version 7.0.3
 			 - Fixing nested types, previously the parent class was not being included.
 			 - Adding analyzers for private nested types.
-			 - Fixing multii-project bug. Projects conflict eachother if generated code is in the same namespace. 
-			   - Fixed this by moving all generated code into the project assembly. 
-			   - More info here: https://andrewlock.net/creating-a-source-generator-part-7-solving-the-source-generator-marker-attribute-problem-part1/
+			 - Fixing multii-project bug. Projects conflict eachother if generated code is in the same namespace.
+			 - Fixed this by moving all generated code into the project assembly.
+			 - More info here: https://andrewlock.net/creating-a-source-generator-part-7-solving-the-source-generator-marker-attribute-problem-part1/
 
 			### Version 7.0.2
 			 - Adding Keyed services support.
@@ -66,11 +76,7 @@
 			 - Removing extensibility (i.e. ObjectFactory). This was not useful and extremely complex with source generation.
 		</PackageReleaseNotes>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\DepRegAttributes.Analyzer\DepRegAttributes.Analyzer.csproj" />
-	</ItemGroup>
-
+	
 	<ItemGroup>
 		<None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
 		<None Include="..\README.md" Pack="true" PackagePath="" />
@@ -84,5 +90,4 @@
 			<TfmSpecificPackageFile Include="$(OutputPath)\DepRegAttributes.Analyzer.dll" PackagePath="analyzers/dotnet/cs" />
 		</ItemGroup>
 	</Target>
-
 </Project>

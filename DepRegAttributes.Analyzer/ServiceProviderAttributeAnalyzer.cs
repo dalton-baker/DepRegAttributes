@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -131,6 +132,15 @@ namespace DepRegAttributes.Analyzer
                         PotentialBadParameter,
                         argument.GetLocation(),
                         $"Using an array as a {argument.NameEquals.Name.Identifier.Text} will result in a reference comparison, you will not be able to resolve it."));
+                }
+
+                if(argument.NameEquals.Name.Identifier.Text == "Key" && context.Compilation.GetDiVersion() < new Version(8, 0, 0))
+                {
+                    context.ReportDiagnostic(
+                    Diagnostic.Create(
+                        PotentialBadParameter,
+                        argument.GetLocation(),
+                        $"Keyed service providers are only available when referencing Microsoft.Extensions.DependencyInjection 8.0.0 or higher."));
                 }
             }
         }

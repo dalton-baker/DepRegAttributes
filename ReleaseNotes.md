@@ -1,3 +1,8 @@
+### Version 7.0.5
+ - Adding project with real dll output to hold attributes.
+ - Releasing attribute project, source generator, and analyzer as single project.
+ - Moving service provider extensions to `{project assembly}.DepRegAttributes`
+
 ### Version 7.0.4
  - Fixing `typeof()` arguments for Key or Tag. These were being picked up and used as a service type.
  - Allowing internal classes to be registered.

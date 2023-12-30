@@ -254,7 +254,24 @@ namespace DepRegAttributes.Analyzer
         }
 
         public static string GetLibraryNamespace(this Compilation complation)
-            => string.IsNullOrEmpty(complation.AssemblyName) ? Consts.LibraryNamespace : complation.AssemblyName;
+            => string.IsNullOrEmpty(complation.AssemblyName) ? Consts.LibraryNamespace : $"{complation.AssemblyName}.{Consts.LibraryNamespace}";
+        
+        public static Version GetDiVersion(this Compilation complation)
+        {
+            var version = new Version(0, 0, 0);
+            if (complation.ReferencedAssemblyNames is not null)
+            {
+                foreach (var assembly in complation.ReferencedAssemblyNames)
+                {
+                    if (assembly.Name == "Microsoft.Extensions.DependencyInjection")
+                    {
+                        version = assembly.Version;
+                        break;
+                    }
+                }
+            }
+            return version;
+        }
     }
 
 

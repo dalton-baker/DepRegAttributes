@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-using DepRegAttributes.ExampleLibrary.DepRegAttributes;
-
 namespace DepRegAttributes.ExampleLibrary
 {
     //You need to write a service collection extention in the

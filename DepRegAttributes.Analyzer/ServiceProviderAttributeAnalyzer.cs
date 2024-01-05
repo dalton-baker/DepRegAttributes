@@ -11,12 +11,12 @@ namespace DepRegAttributes.Analyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ServiceProviderAttributeAnalyzer : DiagnosticAnalyzer
     {
-        private static readonly DiagnosticDescriptor ServiceNotOnImplementation = 
+        private static readonly DiagnosticDescriptor ServiceNotOnImplementation =
             new($"ServiceRegistration001",
-                "Invalid service type", 
+                "Invalid service type",
                 "{0}",
-                "ServiceRegistration", 
-                DiagnosticSeverity.Error, 
+                "ServiceRegistration",
+                DiagnosticSeverity.Error,
                 isEnabledByDefault: true);
 
         private static readonly DiagnosticDescriptor InvalidImplementationType =
@@ -45,8 +45,8 @@ namespace DepRegAttributes.Analyzer
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(
-                ServiceNotOnImplementation, 
-                InvalidImplementationType, 
+                ServiceNotOnImplementation,
+                InvalidImplementationType,
                 InvalidAutoIncludedService,
                 PotentialBadParameter);
 
@@ -65,14 +65,14 @@ namespace DepRegAttributes.Analyzer
 
             var implementation = context.SemanticModel.GetDeclaredSymbol(classDeclaration);
 
-            if(implementation is null)
+            if (implementation is null)
                 return;
 
             var attributes = classDeclaration.AttributeLists
                 .SelectMany(a => a.Attributes)
                 .Where(a => Helpers.IsRegistrationAttribute(a, context.SemanticModel));
 
-            foreach(var attribute in attributes)
+            foreach (var attribute in attributes)
             {
                 foreach (var (service, location) in Helpers.GetServicesWithLocations(attribute, context.SemanticModel, implementation))
                 {
@@ -82,33 +82,29 @@ namespace DepRegAttributes.Analyzer
                             ? $"'{implementation.Name}' does not implement '{service.Name}'"
                             : $"'{implementation.Name}' does not inherit '{service.Name}'";
 
-                        context.ReportDiagnostic(
-                            Diagnostic.Create(
-                                ServiceNotOnImplementation,
-                                location,
-                                message));
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            ServiceNotOnImplementation,
+                            location,
+                            message));
                     }
                     else if (service.DeclaredAccessibility is not (Accessibility.Public or Accessibility.Internal))
                     {
                         if (service.Name == $"I{implementation.Name}" && location == attribute.GetLocation())
                         {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    InvalidAutoIncludedService,
-                                    location,
-                                    $"{service.Name} is not public or internal, so it will not be automatically included for {implementation.Name}"));
+                            context.ReportDiagnostic(Diagnostic.Create(
+                                InvalidAutoIncludedService,
+                                location,
+                                $"{service.Name} is not public or internal, so it will not be automatically included for {implementation.Name}"));
                         }
                         else
                         {
-                            context.ReportDiagnostic(
-                                Diagnostic.Create(
-                                    ServiceNotOnImplementation,
-                                    location,
-                                    $"{service.Name} is not public or internal, you cannot use it as a service type"));
+                            context.ReportDiagnostic(Diagnostic.Create(
+                                ServiceNotOnImplementation,
+                                location,
+                                $"{service.Name} is not public or internal, you cannot use it as a service type"));
                         }
                     }
                 }
-
 
                 AnalyzeImplementation(context, implementation, attribute);
                 AnalyzeProperties(context, attribute);
@@ -125,71 +121,64 @@ namespace DepRegAttributes.Analyzer
                 if (argument.NameEquals is null || argument.NameEquals.Name.Identifier.Text is not ("Tag" or "Key"))
                     continue;
 
-                if(argument.Expression is ImplicitArrayCreationExpressionSyntax)
+                if (argument.Expression is ImplicitArrayCreationExpressionSyntax)
                 {
-                    context.ReportDiagnostic(
-                    Diagnostic.Create(
+                    context.ReportDiagnostic(Diagnostic.Create(
                         PotentialBadParameter,
                         argument.GetLocation(),
                         $"Using an array as a {argument.NameEquals.Name.Identifier.Text} will result in a reference comparison, you will not be able to resolve it."));
-                }
-
-                if(argument.NameEquals.Name.Identifier.Text == "Key" && context.Compilation.GetDiVersion() < new Version(8, 0, 0))
-                {
-                    context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        PotentialBadParameter,
-                        argument.GetLocation(),
-                        $"Keyed service providers are only available when referencing Microsoft.Extensions.DependencyInjection 8.0.0 or higher."));
                 }
             }
         }
 
         private void AnalyzeImplementation(
-            SyntaxNodeAnalysisContext context, 
-            INamedTypeSymbol implementation, 
+            SyntaxNodeAnalysisContext context,
+            INamedTypeSymbol implementation,
             AttributeSyntax attribute)
         {
+            if (implementation.IsGenericType)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    InvalidImplementationType,
+                    implementation.Locations[0],
+                    $"A generic type cannot use the {attribute.Name} attribute"));
+            }
+
             if (implementation.IsUnboundGenericType)
             {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        InvalidImplementationType,
-                        implementation.Locations[0],
-                        $"An unbound generic cannot use the {attribute.Name} attribute"));
+                context.ReportDiagnostic(Diagnostic.Create(
+                    InvalidImplementationType,
+                    implementation.Locations[0],
+                    $"An unbound generic cannot use the {attribute.Name} attribute"));
             }
 
             if (implementation.IsAbstract)
             {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        InvalidImplementationType,
-                        implementation.Locations[0],
-                        $"An abstract class cannot use the {attribute.Name} attribute"));
+                context.ReportDiagnostic(Diagnostic.Create(
+                    InvalidImplementationType,
+                    implementation.Locations[0],
+                    $"An abstract class cannot use the {attribute.Name} attribute"));
             }
             else if (implementation.IsStatic)
             {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        InvalidImplementationType,
-                        implementation.Locations[0],
-                        $"A static class cannot use the {attribute.Name} attribute"));
+                context.ReportDiagnostic(Diagnostic.Create(
+                    InvalidImplementationType,
+                    implementation.Locations[0],
+                    $"A static class cannot use the {attribute.Name} attribute"));
             }
             else if (!implementation.Constructors.Any(c => c.DeclaredAccessibility is Accessibility.Public or Accessibility.Internal))
             {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        InvalidImplementationType,
-                        implementation.Locations[0],
-                        $"You need at least one public constructor to use the {attribute.Name} attribute"));
+                context.ReportDiagnostic(Diagnostic.Create(
+                    InvalidImplementationType,
+                    implementation.Locations[0],
+                    $"You need at least one public constructor to use the {attribute.Name} attribute"));
             }
             else if (implementation.DeclaredAccessibility is not (Accessibility.Public or Accessibility.Internal))
             {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        InvalidImplementationType,
-                        implementation.Locations[0],
-                        $"Only public classes can use the {attribute.Name} attribute"));
+                context.ReportDiagnostic(Diagnostic.Create(
+                    InvalidImplementationType,
+                    implementation.Locations[0],
+                    $"Only public or internal classes can use the {attribute.Name} attribute"));
             }
         }
     }

@@ -1,3 +1,9 @@
+### Version 7.0.6
+ - Reverting back to reflection based registration, removing code generation.
+ - Multi-targeting netstandard2.0 and net8.0.
+ - Updating project dependencies to Microsoft.Extensions.DependencyInjection, versions 3.1.32 and 8.0.0.
+ - New versions of service collection extensions: `AddByAttribute(params object[] tags)` and `AddByAttribute(Assembly, params object[] tags)`
+
 ### Version 7.0.5
  - Adding project with real dll output to hold attributes.
  - Releasing attribute project, source generator, and analyzer as single project.

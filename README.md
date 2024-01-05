@@ -8,11 +8,12 @@ There are three attributes you can use to register services with your ServiceCol
 [RegisterSingleton]
 ```
 
-There is also an extension for IServiceCollection you use to add these services:
-```
+There are also IServiceCollection extensions to add these services:
+```c#
 serviceCollection.AddByAttribute();
+serviceCollection.AddByAttribute(assembly);
 ```
-
+*Passing an assembly will register services only from that assembly. If you don't pass an assembly, services from the current assembly will be registered*
 
 ## Basic Usage
 
@@ -111,8 +112,6 @@ public class ExampleService : IExampleService, IAnotherExampleService
 }
 ```
 
-
-
 ## Registration Tags
 Tags can be used to register services conditionally when building your service collection.
 
@@ -135,10 +134,14 @@ public class ExampleService
     //}
 }
 ```
+If you are using tags and want to register services form a specific assembly, pass the assembly as the first argument:
+```
+serviceCollection.AddByAttribute(assembly, "Key1", "Key2");
+```
 
 
 ## Keyed Services
-For projects referencing version 8.0.0 or higher of the Microsoft.Extensions.DependencyInjection library, you can use the new keyed services feature. You can read more about keyed services in the [.NET 8 Release Notes](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8#keyed-di-services).
+For .NET 8.0 or higher projects, you can use the new keyed services feature. You can read more about keyed services in the [.NET 8 Release Notes](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8#keyed-di-services).
 
 To register a keyed service, pass a key to the `Key` property of any register attribute:
 ```c#

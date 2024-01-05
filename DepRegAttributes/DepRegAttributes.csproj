@@ -7,18 +7,10 @@
 		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.32" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
-		<ProjectReference Include="..\DepRegAttributes.Analyzer\DepRegAttributes.Analyzer.csproj">
-			<PrivateAssets>All</PrivateAssets>
-		</ProjectReference>
-	</ItemGroup>
-
 	<PropertyGroup>
 		<PackageId>DBaker.DepRegAttributes</PackageId>
 		<Authors>dalton_s_baker</Authors>
-		<Version>7.0.5</Version>
+		<Version>7.0.6</Version>
 		<PackageProjectUrl>https://github.com/dalton-baker/DepRegAttributes</PackageProjectUrl>
 		<!--<PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>-->
 		<RepositoryUrl>https://github.com/dalton-baker/DepRegAttributes</RepositoryUrl>
@@ -37,11 +29,17 @@
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 
 		<PackageReleaseNotes>
+			### Version 7.0.6
+			 - Reverting back to reflection based registration, removing code generation.
+			 - Multi-targeting netstandard2.0 and net8.0.
+			 - Updating project dependencies to Microsoft.Extensions.DependencyInjection, versions 3.1.32 and 8.0.0.
+			 - New versions of service collection extensions: `AddByAttribute(params object[] tags)` and `AddByAttribute(Assembly, params object[] tags)`
+
 			### Version 7.0.5
 			 - Adding project with real dll output to hold attributes.
 			 - Releasing attribute project, source generator, and analyzer as single project.
 			 - Moving service provider extensions to `{project assembly}.DepRegAttributes`
-			
+
 			### Version 7.0.4
 			 - Fixing `typeof()` arguments for Key or Tag. These were being picked up and used as a service type.
 			 - Allowing internal classes to be registered.
@@ -77,7 +75,15 @@
 			 - Removing extensibility (i.e. ObjectFactory). This was not useful and extremely complex with source generation.
 		</PackageReleaseNotes>
 	</PropertyGroup>
-	
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.32" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'" />
+		<ProjectReference Include="..\DepRegAttributes.Analyzer\DepRegAttributes.Analyzer.csproj">
+			<PrivateAssets>All</PrivateAssets>
+		</ProjectReference>
+	</ItemGroup>
+
 	<ItemGroup>
 		<None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
 		<None Include="..\README.md" Pack="true" PackagePath="" />

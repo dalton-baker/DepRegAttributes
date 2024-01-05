@@ -8,14 +8,3 @@ public interface ITransientClassWithTypedInterface<T>
 public class TransientClassWithTypedInterface : ITransientClassWithTypedInterface<string>
 {
 }
-
-
-
-public interface ITransientOpenGeneric<T>
-{
-}
-
-[RegisterTransient]
-public class TransientOpenGeneric<T> : ITransientOpenGeneric<T>
-{
-}

@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -68,9 +68,18 @@ namespace DepRegAttributes.Analyzer
             if (implementation is null)
                 return;
 
-            var attributes = classDeclaration.AttributeLists
-                .SelectMany(a => a.Attributes)
-                .Where(a => Helpers.IsRegistrationAttribute(a, context.SemanticModel));
+            var attributes = new List<AttributeSyntax>();
+
+            foreach(var attList in classDeclaration.AttributeLists)
+            {
+                foreach (var attSyntax in attList.Attributes)
+                {
+                    if (Helpers.IsRegistrationAttribute(attSyntax, context.SemanticModel))
+                    {
+                        attributes.Add(attSyntax);
+                    }
+                }
+            }
 
             foreach (var attribute in attributes)
             {

@@ -9,6 +9,7 @@ namespace DepRegAttributes.Analyzer;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class ServiceProviderAttributeAnalyzer : DiagnosticAnalyzer
 {
+    #region Diagnostic Descriptors
     private static readonly DiagnosticDescriptor ServiceNotOnImplementation =
         new($"ServiceRegistration001",
             "Invalid service type",
@@ -25,16 +26,8 @@ public class ServiceProviderAttributeAnalyzer : DiagnosticAnalyzer
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
 
-    private static readonly DiagnosticDescriptor InvalidAutoIncludedService =
-        new($"ServiceRegistration003",
-            "Invalid auto-included service",
-            "{0}",
-            "ServiceRegistration",
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true);
-
     private static readonly DiagnosticDescriptor PotentialBadParameter =
-        new($"ServiceRegistration004",
+        new($"ServiceRegistration003",
             "Potential bad parameter",
             "{0}",
             "ServiceRegistration",
@@ -45,8 +38,8 @@ public class ServiceProviderAttributeAnalyzer : DiagnosticAnalyzer
         ImmutableArray.Create(
             ServiceNotOnImplementation,
             InvalidImplementationType,
-            InvalidAutoIncludedService,
             PotentialBadParameter);
+    #endregion
 
     public override void Initialize(AnalysisContext context)
     {

@@ -17,11 +17,3 @@ ServiceRegistration002 | ServiceRegistration | Error | ServiceProviderAttributeA
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 ServiceRegistration003 | ServiceRegistration | Warning | ServiceProviderAttributeAnalyzer
-
-## Release 7.0.4
-
-### New Rules
-
-Rule ID | Category | Severity | Notes
---------|----------|----------|-------
-ServiceRegistration004 | ServiceRegistration | Warning | ServiceProviderAttributeAnalyzer

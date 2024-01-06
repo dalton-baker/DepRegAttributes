@@ -25,6 +25,12 @@ public static class AttributeSyntaxExtensions
                     if (symbol is INamedTypeSymbol namedTypeSymbol)
                         services.Add((namedTypeSymbol, argument.GetLocation()));
                 }
+                else if (argument is PredefinedTypeSyntax predefinedTypeSyntax)
+                {
+                    var symbol = semanticModel.GetSymbolInfo(predefinedTypeSyntax).Symbol;
+                    if (symbol is INamedTypeSymbol namedTypeSymbol)
+                        services.Add((namedTypeSymbol, argument.GetLocation()));
+                }
             }
         }
 
@@ -38,10 +44,9 @@ public static class AttributeSyntaxExtensions
 
                 else if (argument.Expression is TypeOfExpressionSyntax typeExpression)
                 {
-                    var symbol = semanticModel.GetTypeInfo(typeExpression.Type).Type ??
-                        semanticModel.GetSymbolInfo(typeExpression.Type).Symbol;
+                    var symbol = semanticModel.GetSymbolInfo(typeExpression.Type).Symbol;
                     if (symbol is INamedTypeSymbol namedTypeSymbol)
-                        services.Add((namedTypeSymbol, argument.GetLocation()));
+                        services.Add((namedTypeSymbol, typeExpression.Type.GetLocation()));
                 }
             }
         }

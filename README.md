@@ -153,8 +153,8 @@ public class ExampleService
 }
 ```
 
-## Open Generics
-You can register a generic class as an open generic:
+## Unbound Generics
+You can register a generic class as an unbound generic:
 ```c#
 [RegisterTransient]
 public class ExampleService<T>
@@ -164,7 +164,7 @@ public class ExampleService<T>
 }
 ```
 
-Open generics do not automatically register matching interface types, so you will have to do it manually:
+Unbound generics do not automatically register matching interface types, so you will have to do it manually:
 ```c#
 [RegisterTransient(typeof(IExampleService<>))]
 public class ExampleService<T> : IExampleService<T>
@@ -173,5 +173,5 @@ public class ExampleService<T> : IExampleService<T>
     //serviceCollection.AddTransient(typeof(IExampleService<>), typeof(ExampleService<>));
 }
 ```
-*Note: You must use `typeof()` arguments when doing this, you cannot pass an open generic as a generic argument.*
-*Note 2: There is no analyzer support for open generics, failures will only appear at runtime.*
+*Note: You must use `typeof()` arguments when doing this, you cannot pass an unbound generic as a generic argument.*
+*Note 2: There is no analyzer support for unbound generics, failures will only appear at runtime.*

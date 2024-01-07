@@ -3,6 +3,7 @@
  - Fixing analyzer bug, `int` and `string` generic arguments were not being recognized
  - Removing error analyzer rule for public and internal implementation and service types
  - Adding open generic support.
+ - Adding lots of documentation.
 
 ### Version 7.0.6
  - Reverting back to reflection based registration, removing code generation.

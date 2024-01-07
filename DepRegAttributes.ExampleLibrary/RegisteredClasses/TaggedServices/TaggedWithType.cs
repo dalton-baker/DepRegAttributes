@@ -4,7 +4,7 @@ public interface ITaggedWithType
 {
 }
 
-[RegisterTransient(types: typeof(ITaggedWithType), Tag = typeof(TypeTag))]
+[RegisterTransient(serviceTypes: typeof(ITaggedWithType), Tag = typeof(TypeTag))]
 public class TaggedWithType : ITaggedWithType
 {
 }

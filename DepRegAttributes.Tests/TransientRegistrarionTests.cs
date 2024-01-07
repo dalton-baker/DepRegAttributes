@@ -1,5 +1,4 @@
-﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses;
-using DepRegAttributes.ExampleLibrary.Test;
+﻿using DepRegAttributes.ExampleLibrary.Test;
 
 namespace DepRegAttributes.Tests;
 

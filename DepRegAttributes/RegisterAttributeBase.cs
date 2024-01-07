@@ -11,10 +11,12 @@ public abstract class RegisterAttributeBase(params Type[] asTypes) : Attribute
     /// </summary>
     public object? Tag { get; set; }
 
+#if NET8_0_OR_GREATER
     /// <summary>
     /// Use this to register a Keyed service 
     /// </summary>
     public object? Key { get; set; } = null;
+#endif
 
     /// <summary>
     /// The lifetime of the services registered by this attribute
@@ -38,22 +40,24 @@ public abstract class RegisterAttributeBase(params Type[] asTypes) : Attribute
 
         foreach (var type in serviceTypes)
         {
-            if (!type.IsAssignableFrom(implementationType))
+            if (!implementationType.IsGenericType && !type.IsAssignableFrom(implementationType))
                 throw new CustomAttributeFormatException($"{implementationType.Name} cannot be registered as a {type.Name}.");
 
-            if (type == firstType || ServiceLifetime == ServiceLifetime.Transient)
+#if NET8_0_OR_GREATER
+            if(Key is not null)
             {
-                serviceCollection.Add(new ServiceDescriptor(type, Key, implementationType, ServiceLifetime));
+                if (type.Equals(firstType) || ServiceLifetime is ServiceLifetime.Transient)
+                    serviceCollection.Add(new ServiceDescriptor(type, Key, implementationType, ServiceLifetime));
+                else
+                    serviceCollection.Add(new ServiceDescriptor(type, Key, (sp, k) => sp.GetRequiredKeyedService(firstType, k), ServiceLifetime));
                 continue;
             }
+#endif
 
-            if(Key is null)
-            {
+            if (type.Equals(firstType) || ServiceLifetime is ServiceLifetime.Transient)
+                serviceCollection.Add(new ServiceDescriptor(type, implementationType, ServiceLifetime));
+            else
                 serviceCollection.Add(new ServiceDescriptor(type, sp => sp.GetRequiredService(firstType), ServiceLifetime));
-                continue;
-            }
-
-            serviceCollection.Add(new ServiceDescriptor(type, Key, (sp, k) => sp.GetRequiredKeyedService(firstType, k), ServiceLifetime));
         }
     }
 
@@ -66,7 +70,9 @@ public abstract class RegisterAttributeBase(params Type[] asTypes) : Attribute
         }
         else
         {
-            var defaultInterface = implementationType.GetInterface($"I{implementationType.Name}");
+            var defaultInterface = implementationType.IsGenericType
+                ? null
+                : implementationType.GetInterface($"I{implementationType.Name}");
             serviceTypes = [defaultInterface ?? implementationType];
         }
         return serviceTypes;

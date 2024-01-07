@@ -83,7 +83,7 @@ public class ServiceProviderAttributeAnalyzer : DiagnosticAnalyzer
     {
         foreach (var (service, location) in attribute.GetServicesWithLocations(context.SemanticModel, implementation))
         {
-            if (!implementation.IsTypeInHierarchy(service))
+            if (!service.IsUnboundGenericType && !implementation.IsTypeInHierarchy(service))
             {
                 var message = service.TypeKind == TypeKind.Interface
                     ? $"'{implementation.Name}' does not implement '{service.Name}'"
@@ -121,22 +121,6 @@ public class ServiceProviderAttributeAnalyzer : DiagnosticAnalyzer
         SyntaxNodeAnalysisContext context,
         INamedTypeSymbol implementation)
     {
-        if (implementation.IsGenericType)
-        {
-            context.ReportDiagnostic(Diagnostic.Create(
-                InvalidImplementationType,
-                implementation.Locations[0],
-                $"A generic type cannot use a Register Attribute"));
-        }
-
-        if (implementation.IsUnboundGenericType)
-        {
-            context.ReportDiagnostic(Diagnostic.Create(
-                InvalidImplementationType,
-                implementation.Locations[0],
-                $"An unbound generic cannot use a Register Attribute"));
-        }
-
         if (implementation.IsAbstract)
         {
             context.ReportDiagnostic(Diagnostic.Create(

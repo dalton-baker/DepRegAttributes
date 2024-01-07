@@ -152,3 +152,26 @@ public class ExampleService
     //serviceCollection.AddKeyedTransient<ExampleService>("Example");
 }
 ```
+
+## Unbound Generics
+You can register a generic class as an unbound generic:
+```c#
+[RegisterTransient]
+public class ExampleService<T>
+{
+    //Equivalent:
+    //serviceCollection.AddTransient(typeof(ExampleService<>));
+}
+```
+
+Unbound generics do not automatically register matching interface types, so you will have to do it manually:
+```c#
+[RegisterTransient(typeof(IExampleService<>))]
+public class ExampleService<T> : IExampleService<T>
+{
+    //Equivalent:
+    //serviceCollection.AddTransient(typeof(IExampleService<>), typeof(ExampleService<>));
+}
+```
+*Note: You must use `typeof()` arguments when doing this, you cannot pass an unbound generic as a generic argument.*
+*Note 2: There is no analyzer support for unbound generics, failures will only appear at runtime.*

@@ -5,7 +5,7 @@ public interface IKeyedWithType
 {
 }
 
-[RegisterTransient(types: typeof(IKeyedWithType), Key = typeof(TypeKey))]
+[RegisterTransient(serviceTypes: typeof(IKeyedWithType), Key = typeof(TypeKey))]
 public class KeyedWithType : IKeyedWithType
 {
 }

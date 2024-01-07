@@ -6,8 +6,6 @@ public interface ISingletonGroup1_2 { }
 public interface ISingletonGroup2 { }
 public interface ISingletonGroup2_2 { }
 
-
-
 [RegisterSingleton<ISingletonGroup1, ISingletonGroup1_2>]
 [RegisterSingleton<ISingletonGroup2, ISingletonGroup2_2>]
 public class SingletonClassGroupedByIterfaces: 
@@ -17,4 +15,3 @@ public class SingletonClassGroupedByIterfaces:
     ISingletonGroup2_2
 {
 }
-

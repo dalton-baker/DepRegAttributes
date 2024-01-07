@@ -4,6 +4,7 @@
  - Removing error analyzer rule for public and internal implementation and service types
  - Adding open generic support.
  - Adding lots of documentation.
+ - Reverting project dependencies to Microsoft.Extensions.DependencyInjection.Abstractions, versions 3.1.32 and 8.0.0.
 
 ### Version 7.0.6
  - Reverting back to reflection based registration, removing code generation.

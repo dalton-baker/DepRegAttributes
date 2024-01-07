@@ -120,7 +120,7 @@ Tags are objects, so you can use anything as long as it can be passed as an attr
 serviceCollection.AddByAttribute("Example", 14, ExampleEnum.ExampleValue);
 ```
 
-Tagged services will **always** be registered after untagged services, so they will override thier untagged counterparts. Untagged services will always be included, even when passing tags to the AddByAttribute function.
+Untagged services will always be included, even when passing tags to the AddByAttribute function. Services are registered in the same order as their attributes, keep this in mind if you have a service that is registered as tagged and untagged. You will want the tagged attribute bellow the untagged attribute, since the untagged attribute will be included all the time.
 
 Define tags via the Tag property on attributes:
 ```c#

@@ -1,50 +1,74 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Linq;
 using System.Reflection;
 
 namespace DepRegAttributes;
 
 public abstract class RegisterAttributeBase(params Type[] asTypes) : Attribute
 {
-    private readonly Type[] _asTypes = asTypes;
+    /// <summary>
+    /// Used as a filter when registering services
+    /// </summary>
+    public object? Tag { get; set; }
 
-    public object Tag { get; set; }
+    /// <summary>
+    /// Use this to register a Keyed service 
+    /// </summary>
+    public object? Key { get; set; } = null;
 
-#if NET8_0_OR_GREATER
-    public object Key { get; set; }
-#endif
-
+    /// <summary>
+    /// The lifetime of the services registered by this attribute
+    /// </summary>
     protected abstract ServiceLifetime ServiceLifetime { get; }
 
-    public void RegisterServices(IServiceCollection serviceCollection, Type implementationType, params object[] filters)
+    /// <summary>
+    /// Registers an implementation type as the configured service types in a service collection.
+    /// </summary>
+    /// <param name="serviceCollection">The servcie collection</param>
+    /// <param name="implementationType">The implementation type being regitstered</param>
+    /// <param name="tagFilters">The tags you want to register services for (optional)</param>
+    /// <exception cref="CustomAttributeFormatException">Thrown when an implementation type cannot be registered as a provided service type</exception>
+    public void RegisterServices(IServiceCollection serviceCollection, Type implementationType, params object[] tagFilters)
     {
-        if (Tag != null && !filters.Contains(Tag))
+        if (Tag is not null && Array.IndexOf(tagFilters, Tag) < 0)
             return;
 
-        var asTypes = _asTypes == null || _asTypes.Length == 0
-            ? [ implementationType.GetInterface($"I{implementationType.Name}") ?? implementationType ]
-            : _asTypes;
+        var serviceTypes = GetServiceTypes(implementationType);
+        var firstType = serviceTypes[0];
 
-        foreach (var type in asTypes)
+        foreach (var type in serviceTypes)
         {
             if (!type.IsAssignableFrom(implementationType))
                 throw new CustomAttributeFormatException($"{implementationType.Name} cannot be registered as a {type.Name}.");
 
-            var serviceDescriptor = type == asTypes.First()
-                ? new ServiceDescriptor(type, implementationType, ServiceLifetime)
-                : new ServiceDescriptor(type, sp => sp.GetRequiredService(_asTypes.First()), ServiceLifetime);
-
-#if NET8_0_OR_GREATER
-            if (Key is not null)
+            if (type == firstType || ServiceLifetime == ServiceLifetime.Transient)
             {
-                serviceDescriptor = type == asTypes.First()
-                    ? new ServiceDescriptor(type, Key, implementationType, ServiceLifetime)
-                    : new ServiceDescriptor(type, Key, (sp, k) => sp.GetRequiredKeyedService(_asTypes.First(), k), ServiceLifetime);
+                serviceCollection.Add(new ServiceDescriptor(type, Key, implementationType, ServiceLifetime));
+                continue;
             }
-#endif
 
-            serviceCollection.Add(serviceDescriptor);
+            if(Key is null)
+            {
+                serviceCollection.Add(new ServiceDescriptor(type, sp => sp.GetRequiredService(firstType), ServiceLifetime));
+                continue;
+            }
+
+            serviceCollection.Add(new ServiceDescriptor(type, Key, (sp, k) => sp.GetRequiredKeyedService(firstType, k), ServiceLifetime));
         }
+    }
+
+    private Type[] GetServiceTypes(Type implementationType)
+    {
+        Type[] serviceTypes;
+        if (asTypes != null && asTypes.Length > 0)
+        {
+            serviceTypes = asTypes;
+        }
+        else
+        {
+            var defaultInterface = implementationType.GetInterface($"I{implementationType.Name}");
+            serviceTypes = [defaultInterface ?? implementationType];
+        }
+        return serviceTypes;
     }
 }

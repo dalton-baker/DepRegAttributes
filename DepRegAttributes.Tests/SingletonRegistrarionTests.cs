@@ -10,8 +10,8 @@ public class SingletonRegistrarionTests : UnitTestBase
         var sut = CreateSut();
 
         //Act
-        var singleton = sut.GetRequiredService<SingletonClassRegigisteredAsSelf>();
-        var singleton2 = sut.GetRequiredService<SingletonClassRegigisteredAsSelf>();
+        var singleton = sut.GetRequiredService<SingletonClassRegisteredAsSelf>();
+        var singleton2 = sut.GetRequiredService<SingletonClassRegisteredAsSelf>();
 
         //Assert
         Assert.IsNotNull(singleton);
@@ -25,8 +25,8 @@ public class SingletonRegistrarionTests : UnitTestBase
         var sut = CreateSut();
 
         //Act
-        var singleton1 = sut.GetRequiredService<SingletonClassRegigisteredAsSelf>();
-        var singleton2 = sut.GetRequiredService<SingletonClassRegigisteredAsSelf>();
+        var singleton1 = sut.GetRequiredService<SingletonClassRegisteredAsSelf>();
+        var singleton2 = sut.GetRequiredService<SingletonClassRegisteredAsSelf>();
 
         //Assert
         Assert.IsNotNull(singleton1);

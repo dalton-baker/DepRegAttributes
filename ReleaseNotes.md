@@ -1,3 +1,8 @@
+### Version 7.0.7 (Active Dev)
+ - Refactoring for readability and efficiency
+ - Fixing analyzer bug, `int` and `string` generic arguments were not being recognized
+ - Removing error analyzer rule for public and internal implementation and service types
+
 ### Version 7.0.6
  - Reverting back to reflection based registration, removing code generation.
  - Multi-targeting netstandard2.0 and net8.0.

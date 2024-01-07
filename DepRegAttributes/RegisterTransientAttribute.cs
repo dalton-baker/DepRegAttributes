@@ -6,9 +6,9 @@ namespace DepRegAttributes;
 /// <summary>
 /// Register a service with a Transient lifetime.
 /// </summary>
-/// <param name="types">The service types for this implementation</param>
-public class RegisterTransientAttribute(params Type[] types) : 
-    RegisterAttributeBase(ServiceLifetime.Transient, types)
+/// <param name="serviceTypes">The service types for this implementation.</param>
+public class RegisterTransientAttribute(params Type[] serviceTypes) : 
+    RegisterAttributeBase(ServiceLifetime.Transient, serviceTypes)
 {
 }
 

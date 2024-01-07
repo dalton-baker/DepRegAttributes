@@ -3,6 +3,11 @@ using System;
 
 namespace DepRegAttributes;
 
+/// <summary>
+/// The base calss for Register Attributes.
+/// </summary>
+/// <param name="serviceLifetime">The lifetime of the service registered with the attribute</param>
+/// <param name="serviceTypes">The service types for the class registered with the attribute</param>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public abstract class RegisterAttributeBase(ServiceLifetime serviceLifetime, params Type[] serviceTypes) : Attribute
 {

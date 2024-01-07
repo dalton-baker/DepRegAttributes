@@ -6,9 +6,9 @@ namespace DepRegAttributes;
 /// <summary>
 /// Register a service with a Scoped lifetime.
 /// </summary>
-/// <param name="types">The service types for this implementation</param>
-public class RegisterScopedAttribute(params Type[] types) : 
-    RegisterAttributeBase(ServiceLifetime.Scoped, types)
+/// <param name="serviceTypes">The service types for this implementation.</param>
+public class RegisterScopedAttribute(params Type[] serviceTypes) : 
+    RegisterAttributeBase(ServiceLifetime.Scoped, serviceTypes)
 {
 }
 

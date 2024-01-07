@@ -4,6 +4,9 @@ using System.Reflection;
 
 namespace DepRegAttributes;
 
+/// <summary>
+/// Holds all of the IServiceCollection extentions for adding services with Register attributes.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>

@@ -6,9 +6,9 @@ namespace DepRegAttributes;
 /// <summary>
 /// Register a service with a Singleton lifetime.
 /// </summary>
-/// <param name="types">The service types for this implementation.</param>
-public class RegisterSingletonAttribute(params Type[] types) : 
-    RegisterAttributeBase(ServiceLifetime.Singleton, types)
+/// <param name="serviceTypes">The service types for this implementation.</param>
+public class RegisterSingletonAttribute(params Type[] serviceTypes) : 
+    RegisterAttributeBase(ServiceLifetime.Singleton, serviceTypes)
 {
 }
 

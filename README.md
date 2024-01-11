@@ -1,6 +1,6 @@
 Add services to your Service Collection with attributes! Never touch your Program.cs file again!
 
-*Note: This version targets the lowest version of Microsoft.Extensions.DependencyInjection.Abstractions possible (3.1.32). This means Keyed services are not available*
+*Note: This version targets the lowest version of Microsoft.Extensions.DependencyInjection.Abstractions possible (3.1.32). This means Keyed services are not available.*
 
 There are three attributes you can use to register services with your ServiceCollection:
 ```c#

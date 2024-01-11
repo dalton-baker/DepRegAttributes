@@ -15,13 +15,11 @@ public abstract class RegisterAttributeBase(ServiceLifetime serviceLifetime, par
     /// Used as a filter when registering services
     /// </summary>
     public object? Tag { get; set; }
-
-#if NET8_0_OR_GREATER
+    
     /// <summary>
     /// Use this to register a Keyed service 
     /// </summary>
     public object? Key { get; set; } = null;
-#endif
 
     /// <summary>
     /// The lifetime of the services registered by this attribute

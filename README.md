@@ -1,4 +1,3 @@
-# Dependency Registration Attributes
 Add services to your Service Collection with attributes! Never touch your Program.cs file again!
 
 There are three attributes you can use to register services with your ServiceCollection:

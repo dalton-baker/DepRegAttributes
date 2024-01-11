@@ -30,7 +30,7 @@
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-		<PackageReleaseNotes>https://github.com/dalton-baker/DepRegAttributes/blob/master/ReleaseNotes.md</PackageReleaseNotes>
+		<PackageReleaseNotes>https://github.com/dalton-baker/DepRegAttributes/wiki/Version-8-Release-Notes</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -43,9 +43,9 @@
 	<ItemGroup>
 		<None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
 		<None Include="..\README.md" Pack="true" PackagePath="" />
-		<None Include="..\ReleaseNotes.md" Pack="true" PackagePath="" />
 		<None Include="..\LICENSE" Pack="true" PackagePath="" />
 		<None Include="..\DepRegAttributes.Analyzer\AnalyzerReleases.Shipped.md" Pack="true" PackagePath="" />
+		<None Include="..\ReleaseNotes.md" />
 	</ItemGroup>
 
 	<Target Name="_AddAnalyzersToOutput">

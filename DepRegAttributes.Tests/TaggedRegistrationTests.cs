@@ -1,5 +1,4 @@
-﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses.KeyedServices;
-using DepRegAttributes.ExampleLibrary.RegisteredClasses.TaggedServices;
+﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses.TaggedServices;
 namespace DepRegAttributes.Tests;
 
 [TestClass]

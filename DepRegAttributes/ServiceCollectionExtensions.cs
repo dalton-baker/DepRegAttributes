@@ -95,15 +95,6 @@ public static class ServiceCollectionExtensions
             if (!implementationType.IsGenericType && !type.IsAssignableFrom(implementationType))
                 throw new CustomAttributeFormatException($"{implementationType.Name} cannot be registered as a {type.Name}.");
 
-            if (registerAttribute.Key is not null)
-            {
-                if (type.Equals(firstType) || registerAttribute.ServiceLifetime is ServiceLifetime.Transient)
-                    services.Add(new ServiceDescriptor(type, registerAttribute.Key, implementationType, registerAttribute.ServiceLifetime));
-                else
-                    services.Add(new ServiceDescriptor(type, registerAttribute.Key, (sp, k) => sp.GetRequiredKeyedService(firstType, k), registerAttribute.ServiceLifetime));
-                continue;
-            }
-
             if (type.Equals(firstType) || registerAttribute.ServiceLifetime is ServiceLifetime.Transient)
                 services.Add(new ServiceDescriptor(type, implementationType, registerAttribute.ServiceLifetime));
             else

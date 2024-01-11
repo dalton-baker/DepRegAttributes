@@ -17,11 +17,6 @@ public abstract class RegisterAttributeBase(ServiceLifetime serviceLifetime, par
     public object? Tag { get; set; }
     
     /// <summary>
-    /// Use this to register a Keyed service 
-    /// </summary>
-    public object? Key { get; set; } = null;
-
-    /// <summary>
     /// The lifetime of the services registered by this attribute
     /// </summary>
     internal ServiceLifetime ServiceLifetime => serviceLifetime;

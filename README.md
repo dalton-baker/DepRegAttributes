@@ -1,5 +1,7 @@
 Add services to your Service Collection with attributes! Never touch your Program.cs file again!
 
+*Note: This version targets the lowest version of Microsoft.Extensions.DependencyInjection.Abstractions possible (3.1.32). This means Keyed services are not available*
+
 There are three attributes you can use to register services with your ServiceCollection:
 ```c#
 [RegisterTransient]
@@ -136,22 +138,6 @@ public class ExampleService
 If you are using tags and want to register services form a specific assembly, pass the assembly as the first argument:
 ```
 serviceCollection.AddByAttribute(assembly, "Key1", "Key2");
-```
-
-
-## Keyed Services
-*Note: This is not available in version 3.*
-
-You can read more about keyed services in the [.NET 8 Release Notes](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8#keyed-di-services).
-
-To register a keyed service, pass a key to the `Key` property of any register attribute:
-```c#
-[RegisterTransient(Key = "Example")]
-public class ExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddKeyedTransient<ExampleService>("Example");
-}
 ```
 
 ## Unbound Generics

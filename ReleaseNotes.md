@@ -1,6 +1,6 @@
 ### Version 7.0.8
  - Fixing bug where the obsolete RegisterDependenciesByAttribute function was using the wrong assembly.
- - Targetting .netstandard so the ps1 tools get included in the nuget package.
+ - Targeting .netstandard so the ps1 tools get included in the nuget package.
 
 ### Version 7.0.7
  - Refactoring for readability and efficiency

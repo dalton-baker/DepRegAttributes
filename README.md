@@ -1,4 +1,3 @@
-# Dependency Registration Attributes
 Add services to your Service Collection with attributes! Never touch your Program.cs file again!
 
 There are three attributes you can use to register services with your ServiceCollection:
@@ -141,7 +140,9 @@ serviceCollection.AddByAttribute(assembly, "Key1", "Key2");
 
 
 ## Keyed Services
-For .NET 8.0 or higher projects, you can use the new keyed services feature. You can read more about keyed services in the [.NET 8 Release Notes](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8#keyed-di-services).
+*Note: This is not available in version 3.*
+
+You can read more about keyed services in the [.NET 8 Release Notes](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8#keyed-di-services).
 
 To register a keyed service, pass a key to the `Key` property of any register attribute:
 ```c#

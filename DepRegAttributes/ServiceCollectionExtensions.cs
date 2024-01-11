@@ -16,11 +16,11 @@ public static class ServiceCollectionExtensions
     /// <param name="tagFilters">The tags you want to register services for (optional)</param>
     /// <exception cref="CustomAttributeFormatException">Thrown when an attribute has a service type that is not valid for the implementation type.</exception>
     /// <returns>A reference to this instance after the opperation has completed.</returns>
-    [Obsolete("Replaced with AddByAttribute(params object[])")]
+    [Obsolete("Use AddByAttribute()")]
     public static IServiceCollection RegisterDependenciesByAttribute(
         this IServiceCollection services,
         params object[] tagFilters)
-        => services.AddByAttribute(tagFilters);
+        => services.AddByAttribute(Assembly.GetCallingAssembly(), tagFilters);
 
     /// <summary>
     /// Register services by attribute for a specific Assembly.
@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
     /// <param name="tagFilters">The tags you want to register services for (optional)</param>
     /// <exception cref="CustomAttributeFormatException">Thrown when an attribute has a service type that is not valid for the implementation type.</exception>
     /// <returns>A reference to this instance after the opperation has completed.</returns>
-    [Obsolete("Replaced with AddByAttribute(Assembly, params object[])")]
+    [Obsolete("Use AddByAttribute()")]
     public static IServiceCollection RegisterDependenciesByAttribute(
         this IServiceCollection services,
         Assembly assembly,
@@ -95,7 +95,6 @@ public static class ServiceCollectionExtensions
             if (!implementationType.IsGenericType && !type.IsAssignableFrom(implementationType))
                 throw new CustomAttributeFormatException($"{implementationType.Name} cannot be registered as a {type.Name}.");
 
-#if NET8_0_OR_GREATER
             if (registerAttribute.Key is not null)
             {
                 if (type.Equals(firstType) || registerAttribute.ServiceLifetime is ServiceLifetime.Transient)
@@ -104,7 +103,6 @@ public static class ServiceCollectionExtensions
                     services.Add(new ServiceDescriptor(type, registerAttribute.Key, (sp, k) => sp.GetRequiredKeyedService(firstType, k), registerAttribute.ServiceLifetime));
                 continue;
             }
-#endif
 
             if (type.Equals(firstType) || registerAttribute.ServiceLifetime is ServiceLifetime.Transient)
                 services.Add(new ServiceDescriptor(type, implementationType, registerAttribute.ServiceLifetime));

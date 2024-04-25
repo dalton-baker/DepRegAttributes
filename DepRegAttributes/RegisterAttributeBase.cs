@@ -14,7 +14,7 @@ public abstract class RegisterAttributeBase(ServiceLifetime serviceLifetime, par
     /// <summary>
     /// Used as a filter when registering services
     /// </summary>
-    public object? Tag { get; set; }
+    public object? Tag { get; set; } = null;
     
     /// <summary>
     /// Use this to register a Keyed service 

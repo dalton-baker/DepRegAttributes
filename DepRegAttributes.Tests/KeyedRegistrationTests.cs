@@ -9,7 +9,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetKeyedSingletonWithMultipleInterfacesTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service1 = sut.GetKeyedService<IKeyedInterface>(Const.Value);
@@ -25,7 +27,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetArrayKeyedTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<KeyedWithArray>(new[] { "Value1", "Value2" });
@@ -38,7 +42,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void DontGetConstKeyedTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<KeyedWithConst>();
@@ -51,7 +57,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetConstKeyedTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<KeyedWithConst>(Const.Value);
@@ -64,7 +72,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetEnumKeyedTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<KeyedWithEnum>(TagEnum.TagExample);
@@ -77,7 +87,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetIntKeyedTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<KeyedWithInt>(100);
@@ -90,7 +102,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetKeyedWithInterfaceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<IKeyedWithInterface>("Value");
@@ -103,7 +117,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetKeyedWithInternalConstTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<KeyedWithInternalConst>(KeyedWithInternalConst.Value);
@@ -116,7 +132,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetKeyedWithInternalPrivateConstTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<KeyedWithInternalPrivateConst>("Value");
@@ -129,7 +147,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetStringKeyedTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<KeyedWithString>("Value");
@@ -142,7 +162,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetTypeKeyedTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<IKeyedWithType>(typeof(TypeKey));
@@ -155,7 +177,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void GetKeyedAndTagged()
     {
         //Arrange
-        var sut = CreateSut(TagEnum.TagExample);
+        var sut = new ServiceCollection()
+            .AddExampleLibrary(TagEnum.TagExample)
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<KeyedAndTagged>(Const.Value);
@@ -168,7 +192,9 @@ public class KeyedRegistrationTests : UnitTestBase
     public void DontGetKeyedAndTagged()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetKeyedService<KeyedAndTagged>(Const.Value);

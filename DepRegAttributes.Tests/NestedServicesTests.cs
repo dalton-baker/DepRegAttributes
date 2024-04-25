@@ -1,6 +1,4 @@
-﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses.NestedServices;
-
-namespace DepRegAttributes.Tests;
+﻿namespace DepRegAttributes.Tests;
 
 [TestClass]
 public class NestedServicesTests : UnitTestBase
@@ -9,7 +7,9 @@ public class NestedServicesTests : UnitTestBase
     public void GetNestedServiceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<ParentService.NestedService>();
@@ -22,7 +22,9 @@ public class NestedServicesTests : UnitTestBase
     public void GetNestedServiceWithInterfaceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<ParentService.INestedServiceWithInterface>();
@@ -35,7 +37,9 @@ public class NestedServicesTests : UnitTestBase
     public void GetDoubleNestedServiceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<ParentService.MiddleService.DoubleNestedService>();

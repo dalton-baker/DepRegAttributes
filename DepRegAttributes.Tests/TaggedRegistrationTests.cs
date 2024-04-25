@@ -1,5 +1,4 @@
-﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses.TaggedServices;
-namespace DepRegAttributes.Tests;
+﻿namespace DepRegAttributes.Tests;
 
 [TestClass]
 public class TaggedRegistrationTests : UnitTestBase
@@ -8,7 +7,9 @@ public class TaggedRegistrationTests : UnitTestBase
     public void GetTaggedOneTest()
     {
         //Arrange
-        var sut = CreateSut("One");
+        var sut = new ServiceCollection()
+            .AddExampleLibrary("One")
+            .BuildServiceProvider();
         
         //Act
         var one = sut.GetService<TaggedOne>();
@@ -27,7 +28,9 @@ public class TaggedRegistrationTests : UnitTestBase
     public void GetTaggedTwoTest()
     {
         //Arrange
-        var sut = CreateSut("Two");
+        var sut = new ServiceCollection()
+            .AddExampleLibrary("Two")
+            .BuildServiceProvider();
 
         //Act
         var one = sut.GetService<TaggedOne>();
@@ -46,8 +49,13 @@ public class TaggedRegistrationTests : UnitTestBase
     public void GetMultiTaggedTest()
     {
         //Arrange
-        var sut1 = CreateSut("One");
-        var sut2 = CreateSut("Two");
+        var sut1 = new ServiceCollection()
+            .AddExampleLibrary("One")
+            .BuildServiceProvider();
+
+        var sut2 = new ServiceCollection()
+            .AddExampleLibrary("Two")
+            .BuildServiceProvider();
 
         //Act
         var untagged1 = sut1.GetService<TaggedOneTwo>();
@@ -63,26 +71,12 @@ public class TaggedRegistrationTests : UnitTestBase
     }
 
     [TestMethod]
-    public void GetUntaggedTest()
-    {
-        //Arrange
-        var sut1 = CreateSut("One");
-        var sut2 = CreateSut("Two");
-
-        //Act
-        var untagged1 = sut1.GetService<TaggedNothing>();
-        var untagged2 = sut2.GetService<TaggedNothing>();
-
-        //Assert
-        Assert.IsNotNull(untagged1);
-        Assert.IsNotNull(untagged2);
-    }
-
-    [TestMethod]
     public void GetEnumTagged()
     {
         //Arrange
-        var sut = CreateSut(TagEnum.TagExample);
+        var sut = new ServiceCollection()
+            .AddExampleLibrary(TagEnum.TagExample)
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<TaggedWithEnum>();
@@ -95,7 +89,9 @@ public class TaggedRegistrationTests : UnitTestBase
     public void GetConstTagged()
     {
         //Arrange
-        var sut = CreateSut(Const.Value);
+        var sut = new ServiceCollection()
+            .AddExampleLibrary(Const.Value)
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<TaggedWithConst>();
@@ -108,7 +104,9 @@ public class TaggedRegistrationTests : UnitTestBase
     public void GetIntTagged()
     {
         //Arrange
-        var sut = CreateSut(100);
+        var sut = new ServiceCollection()
+            .AddExampleLibrary(100)
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<TaggedWithInt>();
@@ -121,7 +119,9 @@ public class TaggedRegistrationTests : UnitTestBase
     public void GetInternalConstTagged()
     {
         //Arrange
-        var sut = CreateSut(TaggedWithInternalConst.Value);
+        var sut = new ServiceCollection()
+            .AddExampleLibrary(TaggedWithInternalConst.Value)
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<TaggedWithInternalConst>();
@@ -134,7 +134,9 @@ public class TaggedRegistrationTests : UnitTestBase
     public void GetInternalPrivateConstTagged()
     {
         //Arrange
-        var sut = CreateSut("Value");
+        var sut = new ServiceCollection()
+            .AddExampleLibrary("Value")
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<TaggedWithInternalPrivateConst>();
@@ -146,9 +148,11 @@ public class TaggedRegistrationTests : UnitTestBase
     [TestMethod]
     public void GetArrayTagged()
     {
-        //Arrange
-        var sut = CreateSut(new[] { "Value1", "Value2" });
         //Note, this is possible, but you will not be able to get any services tagged this way
+        //Arrange
+        var sut = new ServiceCollection()
+            .AddExampleLibrary(new[] { "Value1", "Value2" })
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<TaggedWithArray>();
@@ -161,7 +165,9 @@ public class TaggedRegistrationTests : UnitTestBase
     public void GetTypeTagged()
     {
         //Arrange
-        var sut = CreateSut(typeof(TypeTag));
+        var sut = new ServiceCollection()
+            .AddExampleLibrary(typeof(TypeTag))
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<ITaggedWithType>();
@@ -171,10 +177,12 @@ public class TaggedRegistrationTests : UnitTestBase
     }
 
     [TestMethod]
-    public void EnsureTaggedNotPresentInUntaggerRegistration()
+    public void EnsureTaggedNotPresentInUnfilteredRegistration()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var one = sut.GetService<TaggedOne>();
@@ -192,4 +200,78 @@ public class TaggedRegistrationTests : UnitTestBase
         Assert.IsNull(interfaceOneTwo);
         Assert.IsNull(enumTag);
     }
+
+    [TestMethod]
+    public void EnsureUtaggedNotPresentInFilteredRegistration()
+    {
+        //Arrange
+        var sut = new ServiceCollection()
+            .AddExampleLibrary("Misc. Tag")
+            .BuildServiceProvider();
+
+        //Act
+        var untagged = sut.GetService<TaggedNothing>();
+        var transient = sut.GetService<ITransientClassWithOneInterface>();
+
+        //Assert
+        Assert.IsNull(untagged);
+        Assert.IsNull(transient);
+    }
+
+    [TestMethod]
+    public void RegisterTaggedAndUntaggedTest()
+    {
+        //Arrange
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .AddExampleLibrary("One")
+            .BuildServiceProvider();
+
+        //Act
+        var one = sut.GetService<TaggedOne>();
+        var oneTwo = sut.GetService<TaggedOneTwo>();
+        var untagged = sut.GetService<TaggedNothing>();
+        var transient = sut.GetService<ITransientClassWithOneInterface>();
+
+        //Assert
+        Assert.IsNotNull(one);
+        Assert.IsNotNull(oneTwo);
+        Assert.IsNotNull(untagged);
+        Assert.IsNotNull(transient);
+    }
+
+    [TestMethod]
+    public void OverrideByTaggedServiceTest()
+    {
+        //Arrange
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .AddExampleLibrary("Override")
+            .BuildServiceProvider();
+
+        //Act
+        var overrodeService = sut.GetService<IOverridableService>();
+
+        //Assert
+        Assert.IsInstanceOfType(overrodeService, typeof(OverridableTagged));
+        Assert.IsNotInstanceOfType(overrodeService, typeof(OverridableUntagged));
+    }
+
+    [TestMethod]
+    public void EnsureOverridableServiceExists()
+    {
+        //Arrange
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
+
+        //Act
+        var overrodeService = sut.GetService<IOverridableService>();
+
+        //Assert
+        Assert.IsNotInstanceOfType(overrodeService, typeof(OverridableTagged));
+        Assert.IsInstanceOfType(overrodeService, typeof(OverridableUntagged));
+    }
+
+
 }

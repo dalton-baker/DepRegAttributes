@@ -1,6 +1,4 @@
-﻿using DepRegAttributes.ExampleLibrary.Test;
-
-namespace DepRegAttributes.Tests;
+﻿namespace DepRegAttributes.Tests;
 
 [TestClass]
 public class TransientRegistrarionTests : UnitTestBase
@@ -9,7 +7,9 @@ public class TransientRegistrarionTests : UnitTestBase
     public void GetTransientTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transient = sut.GetRequiredService<TransientClassRegisteredAsSelf>();
@@ -22,7 +22,9 @@ public class TransientRegistrarionTests : UnitTestBase
     public void GetMultipleTransientsTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transient1 = sut.GetRequiredService<TransientClassRegisteredAsSelf>();
@@ -38,7 +40,9 @@ public class TransientRegistrarionTests : UnitTestBase
     public void GetTransientFromMultipleInterfacesTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transient1 = sut.GetRequiredService<ITransientClassWithMultipleIntefaces>();
@@ -54,7 +58,9 @@ public class TransientRegistrarionTests : UnitTestBase
     public void GetTransientFromMultipleInterfacesGenricTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transient1 = sut.GetRequiredService<ITransientClassWithMultipleIntefacesGeneric>();
@@ -70,7 +76,9 @@ public class TransientRegistrarionTests : UnitTestBase
     public void GetTransientFromSingleInterfaceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transient1 = sut.GetRequiredService<ITransientClassWithOneInterface>();
@@ -87,7 +95,9 @@ public class TransientRegistrarionTests : UnitTestBase
     public void GetTransientWithTypedInterfaceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transient = sut.GetRequiredService<ITransientClassWithTypedInterface<string>>();
@@ -101,7 +111,9 @@ public class TransientRegistrarionTests : UnitTestBase
     public void GetTransientWithTypedInterfaceInOtherNamespaceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transient = sut.GetRequiredService<ITransientClassWithTypedInterface<ITypeInOtherNamespace>>();

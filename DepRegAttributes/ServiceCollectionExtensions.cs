@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace DepRegAttributes;
@@ -13,56 +15,56 @@ public static class ServiceCollectionExtensions
     /// Register services by attribute for your current Assembly.
     /// </summary>
     /// <param name="services">The Service Collection</param>
-    /// <param name="tagFilters">The tags you want to register services for (optional)</param>
+    /// <param name="tagFilter">The tag you want to register services for (optional)</param>
     /// <exception cref="CustomAttributeFormatException">Thrown when an attribute has a service type that is not valid for the implementation type.</exception>
     /// <returns>A reference to this instance after the opperation has completed.</returns>
     [Obsolete("Use AddByAttribute()")]
     public static IServiceCollection RegisterDependenciesByAttribute(
         this IServiceCollection services,
-        params object[] tagFilters)
-        => services.AddByAttribute(Assembly.GetCallingAssembly(), tagFilters);
+        object? tagFilter = null)
+        => services.AddByAttribute(Assembly.GetCallingAssembly(), tagFilter);
 
     /// <summary>
     /// Register services by attribute for a specific Assembly.
     /// </summary>
     /// <param name="services">The service Collection</param>
     /// <param name="assembly">The Assembly you are registering services from</param>
-    /// <param name="tagFilters">The tags you want to register services for (optional)</param>
+    /// <param name="tagFilter">The tag you want to register services for (optional)</param>
     /// <exception cref="CustomAttributeFormatException">Thrown when an attribute has a service type that is not valid for the implementation type.</exception>
     /// <returns>A reference to this instance after the opperation has completed.</returns>
     [Obsolete("Use AddByAttribute()")]
     public static IServiceCollection RegisterDependenciesByAttribute(
         this IServiceCollection services,
         Assembly assembly,
-        params object[] tagFilters)
-        => services.AddByAttribute(assembly, tagFilters);
+        object? tagFilter = null)
+        => services.AddByAttribute(assembly, tagFilter);
 
     /// <summary>
     /// Register services by attribute for your current Assembly.
     /// </summary>
     /// <param name="services">The service Collection</param>
-    /// <param name="tagFilters">The tags you want to register services for (optional)</param>
+    /// <param name="tagFilter">The tag you want to register services for (optional)</param>
     /// <exception cref="CustomAttributeFormatException">Thrown when an attribute has a service type that is not valid for the implementation type.</exception>
     /// <returns>A reference to this instance after the opperation has completed.</returns>
     public static IServiceCollection AddByAttribute(
         this IServiceCollection services,
-        params object[] tagFilters)
+        object? tagFilter = null)
         => services.AddByAttribute(
             Assembly.GetCallingAssembly(),
-            tagFilters);
+            tagFilter);
 
     /// <summary>
     /// Register services by attribute for a specific Assembly.
     /// </summary>
     /// <param name="services">The service Collection</param>
     /// <param name="assembly">The Assembly you are registering services from</param>
-    /// <param name="tagFilters">The tags you want to register services for (optional)</param>
+    /// <param name="tagFilter">The tag you want to register services for (optional)</param>
     /// <exception cref="CustomAttributeFormatException">Thrown when an attribute has a service type that is not valid for the implementation type.</exception>
     /// <returns>A reference to this instance after the opperation has completed.</returns>
     public static IServiceCollection AddByAttribute(
         this IServiceCollection services,
         Assembly assembly,
-        params object[] tagFilters)
+        object? tagFilter = null)
     {
         foreach (Type implementationType in assembly.GetTypes())
         {
@@ -70,7 +72,7 @@ public static class ServiceCollectionExtensions
             {
                 if(attribute is RegisterAttributeBase registerAttribute)
                 {
-                    if (registerAttribute.Tag is not null && Array.IndexOf(tagFilters, registerAttribute.Tag) < 0)
+                    if (!EqualityComparer<object?>.Default.Equals(tagFilter, registerAttribute.Tag))
                         continue;
 
                     services.AddServiceForAttribute(implementationType, registerAttribute);

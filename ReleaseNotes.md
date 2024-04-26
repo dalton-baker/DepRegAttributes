@@ -1,4 +1,13 @@
 # Version 3
+## Version 3.1.1
+### Updates
+ - Changing `AddByAttribute` extension take a single optional tag filter instead of a list of tag filters.
+   - Was `AddByAttribute(params object[] tagFilters)`.
+   - Now `AddByAttribute(object? tagFilter = null)`.
+### Breaking Changes
+ - When calling `AddByAttribute` only services with a specified tag filter will be registered. Previously it would register all untagged services when a tag was passed in.
+   - This means you will need to call `AddByAttribute` multiple times if you are using tags. Once with no tag filter (this will register all untagged services), then once for each tag you want to register.
+   - This change was made mainly to make tags easier to understand. Also, the `params` parameter didn't allow you to specify the order that tagged services were registered in. 
 ## Version 3.1.0
 ### Updates
  - Targeting .NET Standard 2.0.

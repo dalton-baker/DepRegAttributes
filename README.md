@@ -115,11 +115,11 @@ public class ExampleService : IExampleService, IAnotherExampleService
 Tags can be used to register services conditionally when building your service collection.
 
 Tags are objects, so you can use anything as long as it can be passed as an attribute argument. This limits them to constants (i.e. strings, enums, numbers).
+```c#
+serviceCollection.AddByAttribute("Example");
+serviceCollection.AddByAttribute(14);
+serviceCollection.AddByAttribute(ExampleEnum.ExampleValue);
 ```
-serviceCollection.AddByAttribute("Example", 14, ExampleEnum.ExampleValue);
-```
-
-Untagged services will always be included, even when passing tags to the AddByAttribute function. Services are registered in the same order as their attributes, keep this in mind if you have a service that is registered as tagged and untagged. You will want the tagged attribute bellow the untagged attribute, since the untagged attribute will be included all the time.
 
 Define tags via the Tag property on attributes:
 ```c#
@@ -127,17 +127,22 @@ Define tags via the Tag property on attributes:
 public class ExampleService
 {
     //Equivalent:
-    //if(includedTag.Equals("Example"))
+    //if(tagFilter.Equals("Example"))
     //{
     //    serviceCollection.AddTransient<ExampleService>();
     //}
 }
 ```
-If you are using tags and want to register services form a specific assembly, pass the assembly as the first argument:
-```
-serviceCollection.AddByAttribute(assembly, "Key1", "Key2");
-```
 
+When using tagged services you will need to call `AddByAttribute` multiple times, once for your untagged services, then once for each tag.
+```c#
+//Add untagged services
+serviceCollection.AddByAttribute();
+//Add services tagged with 'ExampleEnum.ExampleValue'
+serviceCollection.AddByAttribute(ExampleEnum.ExampleValue);
+//Add services tagged with '14'
+serviceCollection.AddByAttribute(14);
+```
 
 ## Keyed Services
 *Note: This is not available in version 3.*
@@ -165,7 +170,7 @@ public class ExampleService<T>
 }
 ```
 
-Unbound generics do not automatically register matching interface types, so you will have to do it manually:
+Unbound generics do not automatically register with matching interfaces, so you need to specify them explicitly:
 ```c#
 [RegisterTransient(typeof(IExampleService<>))]
 public class ExampleService<T> : IExampleService<T>
@@ -174,5 +179,5 @@ public class ExampleService<T> : IExampleService<T>
     //serviceCollection.AddTransient(typeof(IExampleService<>), typeof(ExampleService<>));
 }
 ```
-*Note: You must use `typeof()` arguments when doing this, you cannot pass an unbound generic as a generic argument.*
+*Note: You must use `typeof()` arguments when doing this, you cannot pass an unbound generic as a generic argument.*  
 *Note 2: There is no analyzer support for unbound generics, failures will only appear at runtime.*

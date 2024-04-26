@@ -7,7 +7,9 @@ public class SingletonRegistrarionTests : UnitTestBase
     public void GetSingletonTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var singleton = sut.GetRequiredService<SingletonClassRegisteredAsSelf>();
@@ -22,7 +24,9 @@ public class SingletonRegistrarionTests : UnitTestBase
     public void GetMultipleSingletonsTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var singleton1 = sut.GetRequiredService<SingletonClassRegisteredAsSelf>();
@@ -38,7 +42,9 @@ public class SingletonRegistrarionTests : UnitTestBase
     public void GetSingletonFromMultipleInterfacesTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var singleton1 = sut.GetRequiredService<ISingletonClassWithMultipleInterfaces>();
@@ -54,7 +60,9 @@ public class SingletonRegistrarionTests : UnitTestBase
     public void GetSingletonFromMultipleInterfacesGenericTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var singleton1 = sut.GetRequiredService<ISingletonClassWithMultipleInterfacesGeneric>();
@@ -70,7 +78,9 @@ public class SingletonRegistrarionTests : UnitTestBase
     public void GetSingletonGroupsTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var singletonGroup1 = sut.GetRequiredService<ISingletonGroup1>();
@@ -97,7 +107,9 @@ public class SingletonRegistrarionTests : UnitTestBase
     public void GetSingletonFromSingleInterfaceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var singleton1 = sut.GetRequiredService<ISingletonClassWithOneInterface>();

@@ -1,8 +1,4 @@
-﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses.ExternalReferences;
-using DepRegAttributes.ExampleLibrary.RegisteredClasses.TaggedServices;
-using DepRegAttributes.ExternalExampleLibrary;
-using DepRegAttributes.ExternalExampleLibrary.SubNamespace;
-namespace DepRegAttributes.Tests;
+﻿namespace DepRegAttributes.Tests;
 
 [TestClass]
 public class ExternalResourceTests : UnitTestBase
@@ -11,7 +7,9 @@ public class ExternalResourceTests : UnitTestBase
     public void GetFromExternalInterface()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<IExternalInterface>();
@@ -24,7 +22,9 @@ public class ExternalResourceTests : UnitTestBase
     public void GetFromExternalInterfaceWithNamespace()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<IExternalInterfaceInNamespace>();
@@ -37,7 +37,9 @@ public class ExternalResourceTests : UnitTestBase
     public void GetTaggedWithExternalenum()
     {
         //Arrange
-        var sut = CreateSut(ExternalEnum.Value);
+        var sut = new ServiceCollection()
+            .AddExampleLibrary(ExternalEnum.Value)
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<TaggedWithExternalEnum>();
@@ -50,7 +52,9 @@ public class ExternalResourceTests : UnitTestBase
     public void GetTaggedWithExternalConst()
     {
         //Arrange
-        var sut = CreateSut(ExternalConst.Value);
+        var sut = new ServiceCollection()
+            .AddExampleLibrary(ExternalConst.Value)
+            .BuildServiceProvider();
 
         //Act
         var service = sut.GetService<TaggedWithExternalConst>();

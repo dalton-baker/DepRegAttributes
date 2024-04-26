@@ -1,6 +1,4 @@
-﻿using DepRegAttributes.ExampleLibrary.RegisteredClasses.OpenGenerics;
-
-namespace DepRegAttributes.Tests;
+﻿namespace DepRegAttributes.Tests;
 
 [TestClass]
 public class OpenGenericTests : UnitTestBase
@@ -9,7 +7,9 @@ public class OpenGenericTests : UnitTestBase
     public void GetGenericTransientTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transientInt = sut.GetRequiredService<TransientOpenGeneric<int>>();
@@ -26,7 +26,9 @@ public class OpenGenericTests : UnitTestBase
     public void GetGenericTransientInterfaceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transientInt = sut.GetRequiredService<ITransientOpenGeneric<int>>();
@@ -43,7 +45,9 @@ public class OpenGenericTests : UnitTestBase
     public void GetMutipleGenericTransientTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transientInt = sut.GetRequiredService<TransientOpenMultipleGeneric<int, string>>();
@@ -60,7 +64,9 @@ public class OpenGenericTests : UnitTestBase
     public void GetMutipleGenericTransientInterfaceTest()
     {
         //Arrange
-        var sut = CreateSut();
+        var sut = new ServiceCollection()
+            .AddExampleLibrary()
+            .BuildServiceProvider();
 
         //Act
         var transientInt = sut.GetRequiredService<ITransientOpenMultipleGeneric<int, string>>();

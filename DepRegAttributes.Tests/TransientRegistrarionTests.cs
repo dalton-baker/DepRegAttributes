@@ -51,7 +51,7 @@ public class TransientRegistrarionTests : UnitTestBase
         //Assert
         Assert.IsNotNull(transient1);
         Assert.IsNotNull(transient2);
-        Assert.AreNotEqual(transient1, transient2);
+        Assert.AreNotEqual<object>(transient1, transient2);
     }
 
     [TestMethod]
@@ -69,7 +69,7 @@ public class TransientRegistrarionTests : UnitTestBase
         //Assert
         Assert.IsNotNull(transient1);
         Assert.IsNotNull(transient2);
-        Assert.AreNotEqual(transient1, transient2);
+        Assert.AreNotEqual<object>(transient1, transient2);
     }
 
     [TestMethod]

@@ -53,7 +53,7 @@ public class SingletonRegistrarionTests : UnitTestBase
         //Assert
         Assert.IsNotNull(singleton1);
         Assert.IsNotNull(singleton2);
-        Assert.AreEqual(singleton1, singleton2);
+        Assert.AreEqual<object>(singleton1, singleton2);
     }
 
     [TestMethod]
@@ -71,7 +71,7 @@ public class SingletonRegistrarionTests : UnitTestBase
         //Assert
         Assert.IsNotNull(singleton1);
         Assert.IsNotNull(singleton2);
-        Assert.AreEqual(singleton1, singleton2);
+        Assert.AreEqual<object>(singleton1, singleton2);
     }
 
     [TestMethod]
@@ -91,16 +91,16 @@ public class SingletonRegistrarionTests : UnitTestBase
         //Assert
         Assert.IsNotNull(singletonGroup1);
         Assert.IsNotNull(singletonGroup1_2);
-        Assert.AreEqual(singletonGroup1, singletonGroup1_2);
+        Assert.AreEqual<object>(singletonGroup1, singletonGroup1_2);
 
         Assert.IsNotNull(singletonGroup2);
         Assert.IsNotNull(singletonGroup2_2);
-        Assert.AreEqual(singletonGroup2, singletonGroup2_2);
+        Assert.AreEqual<object>(singletonGroup2, singletonGroup2_2);
 
-        Assert.AreNotEqual(singletonGroup1, singletonGroup2);
-        Assert.AreNotEqual(singletonGroup1, singletonGroup2_2);
-        Assert.AreNotEqual(singletonGroup1_2, singletonGroup2);
-        Assert.AreNotEqual(singletonGroup1_2, singletonGroup2_2);
+        Assert.AreNotEqual<object>(singletonGroup1, singletonGroup2);
+        Assert.AreNotEqual<object>(singletonGroup1, singletonGroup2_2);
+        Assert.AreNotEqual<object>(singletonGroup1_2, singletonGroup2);
+        Assert.AreNotEqual<object>(singletonGroup1_2, singletonGroup2_2);
     }
 
     [TestMethod]

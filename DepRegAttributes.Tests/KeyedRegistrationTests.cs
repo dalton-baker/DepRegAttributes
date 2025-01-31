@@ -20,7 +20,7 @@ public class KeyedRegistrationTests : UnitTestBase
         //Assert
         Assert.IsNotNull(service1);
         Assert.IsNotNull(service2);
-        Assert.AreEqual(service1, service2);
+        Assert.AreEqual<object>(service1, service2);
     }
 
     [TestMethod]

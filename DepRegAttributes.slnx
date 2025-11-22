@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Actions/">
+    <File Path=".github/workflows/build-test.yml" />
+  </Folder>
+  <Project Path="DepRegAttributes.Analyzer/DepRegAttributes.Analyzer.csproj" />
+  <Project Path="DepRegAttributes.ExampleLibrary/DepRegAttributes.ExampleLibrary.csproj" />
+  <Project Path="DepRegAttributes.ExternalExampleLibrary/DepRegAttributes.ExternalExampleLibrary.csproj" />
+  <Project Path="DepRegAttributes.Tests/DepRegAttributes.Tests.csproj" />
+  <Project Path="DepRegAttributes/DepRegAttributes.csproj" />
+</Solution>

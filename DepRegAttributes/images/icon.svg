@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="phase" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="white" stop-opacity="0"/>
+      <stop offset="40%" stop-color="white" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="white" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Black background -->
+  <rect width="128" height="128" fill="#000"/>
+
+  <!-- Left bracket -->
+  <path d="M12 24 H28 V32 H20 V96 H28 V104 H12 Z" fill="white"/>
+
+  <!-- Right bracket -->
+  <path d="M116 24 H100 V32 H108 V96 H100 V104 H116 Z" fill="white"/>
+
+  <!-- D shape -->
+  <path d="M30 24 H66 Q102 24 102 64 Q102 104 66 104 H30 Z" fill="url(#phase)"/>
+</svg>

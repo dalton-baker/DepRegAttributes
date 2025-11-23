@@ -1,183 +1,153 @@
-Add services to your Service Collection with attributes! Never touch your Program.cs file again!
+## DepRegAttributes
 
-There are three attributes you can use to register services with your ServiceCollection:
+**Register services with attributes. Skip manual registration in `Program.cs`!**
+
+---
+
+### Quick Start
+
+**Attributes for registration:**
 ```c#
 [RegisterTransient]
 [RegisterScoped]
 [RegisterSingleton]
 ```
 
-There are also IServiceCollection extensions to add these services:
+**Register all attributed services:**
 ```c#
 serviceCollection.AddByAttribute();
-serviceCollection.AddByAttribute(assembly);
+serviceCollection.AddByAttribute(assembly); // Only from specific assembly
 ```
-*Passing an assembly will register services only from that assembly. If you don't pass an assembly, services from the current assembly will be registered*
 
-## Basic Usage
+---
 
+## Usage Examples
+
+### 1. Basic Registration
 ```c#
 [RegisterTransient]
-public class ExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddTransient<ExampleService>();
-}
+public class ExampleService { }
+// Equivalent: serviceCollection.AddTransient<ExampleService>();
 ```
 
-If your service has an interface with a matching name, it will be automatically used.
-This is the most used case. 
+If your class implements an interface with a matching name, it will be registered as that interface:
 ```c#
 [RegisterTransient]
-public class ExampleService : IExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddTransient<IExampleService, ExampleService>();
-}
+public class ExampleService : IExampleService { }
+// Equivalent: serviceCollection.AddTransient<IExampleService, ExampleService>();
 ```
-*Note: this does not happen if you have any explicitly defined service types in the attribute*
+*Note: Explicit service types in the attribute override this behavior.*
 
-
-## Registering with Explicit Service Types
-
+### 2. Explicit Service Types
 ```c#
 [RegisterTransient<IAnotherExampleService>]
-public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
-}
+public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService { }
+// Equivalent: serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
 ```
 
-You can register your implementation with as many service types as you want.
+Register with multiple service types:
 ```c#
 [RegisterTransient<ExampleServiceBase, IExampleService, IAnotherExampleService>]
-public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddTransient<ExampleServiceBase, ExampleService>();
-    //serviceCollection.AddTransient<IExampleService, ExampleService>();
-    //serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
-}
+public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService { }
+// Equivalent:
+// serviceCollection.AddTransient<ExampleServiceBase, ExampleService>();
+// serviceCollection.AddTransient<IExampleService, ExampleService>();
+// serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
 ```
 
-You can also use multiple attributes.
+Or use multiple attributes:
 ```c#
 [RegisterTransient<ExampleServiceBase>]
 [RegisterTransient<IExampleService>]
 [RegisterTransient<IAnotherExampleService>]
-public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddTransient<ExampleServiceBase, ExampleService>();
-    //serviceCollection.AddTransient<IExampleService, ExampleService>();
-    //serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
-}
+public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService { }
+// Equivalent: One registration per attribute
 ```
 
-If you are using a C# language version lower than 11, you will not be able to use generic arguments. Instead use type arguments:
+**C# < 11:** Use type arguments instead of generics:
 ```c#
 [RegisterTransient(typeof(IExampleService), typeof(IAnotherExampleService))]
-public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddTransient<IExampleService, ExampleService>();
-    //serviceCollection.AddTransient<IAnotherExampleService, ExampleService>();
-}
+public class ExampleService : ExampleServiceBase, IExampleService, IAnotherExampleService { }
 ```
 
-When using multiple servcie types, scoped and singletons work a little differently form transient.
-For each attribute, only one object will be constructed for a singleton or scoped service.
+### 3. Singleton & Scoped Registration
+For each attribute, only one object is constructed for singleton or scoped services:
 ```c#
 [RegisterSingleton<IExampleService, IAnotherExampleService>]
-public class ExampleService : IExampleService, IAnotherExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddSingleton<IExampleService, ExampleService>();
-    //serviceCollection.AddSingleton(sp => (IAnotherExampleService)sp.GetRequiredService<IExampleService>());
-}
+public class ExampleService : IExampleService, IAnotherExampleService { }
+// Equivalent:
+// serviceCollection.AddSingleton<IExampleService, ExampleService>();
+// serviceCollection.AddSingleton(sp => (IAnotherExampleService)sp.GetRequiredService<IExampleService>());
 ```
-As you can see, you will get a reference to the same object when requesting either service.
+*Both interfaces resolve to the same instance.*
 
-If you use multiple attributes you will get a different singleton for each service.
+Multiple attributes = different instances:
 ```c#
 [RegisterSingleton<IExampleService>]
 [RegisterSingleton<IAnotherExampleService>]
-public class ExampleService : IExampleService, IAnotherExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddSingleton<IExampleService, ExampleService>();
-    //serviceCollection.AddSingleton<IAnotherExampleService, ExampleService>();
-}
+public class ExampleService : IExampleService, IAnotherExampleService { }
+// Equivalent: Separate singleton for each service type
 ```
 
-## Registration Tags
-Tags can be used to register services conditionally when building your service collection.
+---
 
-Tags are objects, so you can use anything as long as it can be passed as an attribute argument. This limits them to constants (i.e. strings, enums, numbers).
+## Registering Hosted Services
+
+To register a hosted service, use:
+```c#
+[RegisterSingleton<IHostedService>]
+public class MyWorker : IHostedService { }
+// Equivalent: services.AddHostedService<MyWorker>()
+```
+
+---
+
+## Advanced Features
+
+### Registration Tags
+Tags allow conditional registration. Tags must be constants (string, enum, number):
 ```c#
 serviceCollection.AddByAttribute("Example");
 serviceCollection.AddByAttribute(14);
 serviceCollection.AddByAttribute(ExampleEnum.ExampleValue);
 ```
 
-Define tags via the Tag property on attributes:
+Set tags via the attribute:
 ```c#
 [RegisterTransient(Tag = "Example")]
-public class ExampleService
-{
-    //Equivalent:
-    //if(tagFilter.Equals("Example"))
-    //{
-    //    serviceCollection.AddTransient<ExampleService>();
-    //}
-}
+public class ExampleService { }
+// Only registered if tag matches
 ```
 
-When using tagged services you will need to call `AddByAttribute` multiple times, once for your untagged services, then once for each tag.
+Call `AddByAttribute` for each tag:
 ```c#
-//Add untagged services
-serviceCollection.AddByAttribute();
-//Add services tagged with 'ExampleEnum.ExampleValue'
+serviceCollection.AddByAttribute(); // Untagged
 serviceCollection.AddByAttribute(ExampleEnum.ExampleValue);
-//Add services tagged with '14'
 serviceCollection.AddByAttribute(14);
 ```
 
-## Keyed Services
-*Note: This is not available in version 3.*
+### Keyed Services *(Not available in v3)*
+Read more: [.NET 8 Release Notes](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8/runtime#keyed-di-services)
 
-You can read more about keyed services in the [.NET 8 Release Notes](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8/runtime#keyed-di-services).
-
-To register a keyed service, pass a key to the `Key` property of any register attribute:
+Register a keyed service:
 ```c#
 [RegisterTransient(Key = "Example")]
-public class ExampleService
-{
-    //Equivalent:
-    //serviceCollection.AddKeyedTransient<ExampleService>("Example");
-}
+public class ExampleService { }
+// Equivalent: serviceCollection.AddKeyedTransient<ExampleService>("Example");
 ```
 
-## Unbound Generics
-You can register a generic class as an unbound generic:
+### Unbound Generics
+Register a generic class as an unbound generic:
 ```c#
 [RegisterTransient]
-public class ExampleService<T>
-{
-    //Equivalent:
-    //serviceCollection.AddTransient(typeof(ExampleService<>));
-}
+public class ExampleService<T> { }
+// Equivalent: serviceCollection.AddTransient(typeof(ExampleService<>));
 ```
 
-Unbound generics do not automatically register with matching interfaces, so you need to specify them explicitly:
+Explicit interface registration for unbound generics:
 ```c#
 [RegisterTransient(typeof(IExampleService<>))]
-public class ExampleService<T> : IExampleService<T>
-{
-    //Equivalent:
-    //serviceCollection.AddTransient(typeof(IExampleService<>), typeof(ExampleService<>));
-}
+public class ExampleService<T> : IExampleService<T> { }
+// Equivalent: serviceCollection.AddTransient(typeof(IExampleService<>), typeof(ExampleService<>));
 ```
-*Note: You must use `typeof()` arguments when doing this, you cannot pass an unbound generic as a generic argument.*  
-*Note 2: There is no analyzer support for unbound generics, failures will only appear at runtime.*
+*Note: Use `typeof()` for unbound generics. No analyzer support (runtime errors only).*

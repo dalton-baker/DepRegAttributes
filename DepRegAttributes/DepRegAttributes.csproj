@@ -17,7 +17,7 @@
 		<RepositoryUrl>https://github.com/dalton-baker/DepRegAttributes</RepositoryUrl>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Description>
-			Add services to your Service Collection with attributes! Never touch your Program.cs file again!
+			Register services with attributes. Skip manual registration in Program.cs!
 		</Description>
 		<Copyright></Copyright>
 		<PackageTags>
